@@ -1,34 +1,73 @@
 <template>
   <div class="app-container">
+
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="Поиск" style="width: 300px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.title" placeholder="Поиск по Логину и ФИО" style="width: 300px; float: left;" class="filter-item" @keyup.enter.native="handleFilter" />
 
-<!--      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
-<!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
-<!--      </el-select>-->
-
-      <el-select v-model="listQuery.type" placeholder="Тип события" clearable class="filter-item" style="width: 200px; margin-left: 10px; margin-right: 10px;">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-<!--      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
-<!--        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
-<!--      </el-select>-->
-
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" style="margin-left: 5px; margin-right: 30px; float: left;" type="primary" icon="el-icon-search" @click="handleFilter">
         Поиск
       </el-button>
-<!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
-<!--        Add-->
-<!--      </el-button>-->
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+
+      <!--      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
+      <!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+      <!--      </el-select>-->
+
+      <el-select v-model="listQuery.event" placeholder="Тип события" clearable class="filter-item" style="width: 200px; margin-left: 10px; margin-right: 30px; float: left">
+        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      </el-select>
+
+      <div class="block" style="float: left;">
+        <span class="demonstration">Дата </span>
+        <el-date-picker
+          v-model="value2"
+          type="datetimerange"
+          :picker-options="pickerOptions"
+          range-separator="По"
+          start-placeholder="Start date"
+          end-placeholder="End date"
+          align="right"
+        />
+      </div>
+
+      <!--      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
+      <!--        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
+      <!--      </el-select>-->
+
+      <!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
+      <!--        Add-->
+      <!--      </el-button>-->
+      <el-button v-waves :loading="downloadLoading" class="filter-item" style="float: right;" type="primary" icon="el-icon-download" @click="handleDownload">
         Скачать отчет .xlsx
       </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        показать АС/ИС
-      </el-checkbox>
-      <el-button v-waves class="filter-item" style="float: right;" type="primary" icon="el-icon-download">
-        Сохранить отчет (не подключено)
+    </div>
+
+    <div class="clearfix" />
+
+    <div class="filter-container" style="margin-top: 7px;">
+      <el-button class="filter-item" type="primary">
+        Наксторить поля
       </el-button>
+      <el-checkbox v-model="showSystem" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        Система
+      </el-checkbox>
+      <el-checkbox v-model="showIogv" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        ИОГВ
+      </el-checkbox>
+      <el-checkbox v-model="showFio" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        ФИО
+      </el-checkbox>
+      <el-checkbox v-model="showLogin" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        Логин
+      </el-checkbox>
+      <el-checkbox v-model="showDate" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        Дата
+      </el-checkbox>
+      <el-checkbox v-model="showEvent" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        Событие
+      </el-checkbox>
+
+      <a href="#/stats_group" class="link-type" style="float: right; margin-top: 10px;" icon="el-icon-upload">Сгруппировать отчет</a>
+
     </div>
 
     <el-table
@@ -41,77 +80,84 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+
+      <el-table-column v-if="showSystem" label="Система" min-width="180">
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.system | substrFilter }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Логин пользователя" width="150" align="center">
+      <el-table-column v-if="showIogv" label="ИОГВ" min-width="180">
         <template slot-scope="{row}">
-          <span>root</span>
+          <span>{{ row.iogv | substrFilter }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Дата" width="150px" align="center">
+      <el-table-column v-if="showFio" label="ФИО пользователя" min-width="180">
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.fio | substrFilter }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Действие" min-width="150">
+      <el-table-column v-if="showLogin" label="Логин" align="center" min-width="120">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.type | typeFilter}}</span>
+          <span>{{ row.login }}</span>
         </template>
       </el-table-column>
 
-<!--      <el-table-column label="Author" width="110px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.author }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      -->
-      <el-table-column v-if="showReviewer" label="АС/ИС" width="110px" align="center">
+      <el-table-column v-if="showDate" label="Дата" align="center" min-width="120">
         <template slot-scope="{row}">
-          <span>АИС ТОРИС</span>
+          <!--          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
+          <span>{{ row.date }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="организация пользователя" align="center" width="400">
+      <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180">
         <template slot-scope="{row}">
-          <span v-if="row.importance" icon-class="star">Комитет по культуре Санкт-Петербурга</span>
+          <span>{{ row.event | substrFilter }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="ФИО пользователя" align="center" width="300">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">Сидоров Иван Петрович</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-<!--      <el-table-column label="Status" class-name="status-col" width="100">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <el-tag :type="row.status | statusFilter">-->
-<!--            {{ row.status }}-->
-<!--          </el-tag>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-      <el-table-column label="Действия" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Ред.
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Обраб.
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Не обр.
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            Удал.
-          </el-button>
-        </template>
-      </el-table-column>
+      <!--
+            <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+              <template slot-scope="{row}">
+                <span>{{ row.id }}</span>
+              </template>
+            </el-table-column>
+      -->
+
+      <!--      <el-table-column label="Author" width="110px" align="center">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <span>{{ row.author }}</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      -->
+
+      <!--      <el-table-column label="Status" class-name="status-col" width="100">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <el-tag :type="row.status | statusFilter">-->
+      <!--            {{ row.status }}-->
+      <!--          </el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column label="Действия" align="center" width="230" class-name="small-padding fixed-width">
+
+              <template slot-scope="{row,$index}">
+                <el-button type="primary" size="mini" @click="handleUpdate(row)">
+                  Ред.
+                </el-button>
+                <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+                  Обраб.
+                </el-button>
+                <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
+                  Не обр.
+                </el-button>
+                <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+                  Удал.
+                </el-button>
+              </template>
+            </el-table-column>-->
+
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
@@ -126,20 +172,20 @@
         <el-form-item label="Дата" prop="timestamp">
           <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
         </el-form-item>
-<!--        <el-form-item label="Title" prop="title">-->
-<!--          <el-input v-model="temp.title" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Status">-->
-<!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
-<!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Imp">-->
-<!--          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Remark">-->
-<!--          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="Title" prop="title">-->
+        <!--          <el-input v-model="temp.title" />-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="Status">-->
+        <!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
+        <!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
+        <!--          </el-select>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="Imp">-->
+        <!--          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="Remark">-->
+        <!--          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -153,14 +199,14 @@
 
     <el-dialog :visible.sync="dialogPvVisible" title="Информация о пользователе">
       <el-table border fit highlight-current-row style="width: 100%">
-        <el-table-column label="Имя"></el-table-column>
-        <el-table-column label="Фамилия"></el-table-column>
-        <el-table-column label="Отчество"></el-table-column>
+        <el-table-column label="Имя" />
+        <el-table-column label="Фамилия" />
+        <el-table-column label="Отчество" />
       </el-table>
       <el-table border fit highlight-current-row style="width: 100%">
-        <el-table-column label="Организация"></el-table-column>
-        <el-table-column label="Должность"></el-table-column>
-        <el-table-column label="Логин"></el-table-column>
+        <el-table-column label="Организация" />
+        <el-table-column label="Должность" />
+        <el-table-column label="Логин" />
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Подтвердить</el-button>
@@ -170,16 +216,27 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { createArticle, fetchPv, updateArticle } from '@/api/article'
+import { statsList } from '@/api/remote-search'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+// import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'Аутентификация пользователя' },
-  { key: 'US', display_name: 'Вход в систему (визит)' },
-  { key: 'JP', display_name: 'Обращение к справочнику' },
-  { key: 'EU', display_name: 'Просмотр объекта' }
+  { key: 'CN', display_name: 'Вход в систему (визит)' },
+  { key: 'CN', display_name: 'Обращение к справочнику' },
+  { key: 'CN', display_name: 'Просмотр объекта' },
+  { key: 'CN', display_name: 'Изменение объекта' },
+  { key: 'CN', display_name: 'Формирование печатной формы' },
+  { key: 'CN', display_name: 'Формирование отчета' },
+  { key: 'CN', display_name: 'Создание объекта' },
+  { key: 'CN', display_name: 'Экспорт данных' },
+  { key: 'CN', display_name: 'Импорт данных' },
+  { key: 'CN', display_name: 'Удаление объекта' },
+  { key: 'CN', display_name: 'Вызов внешнего сервиса' },
+  { key: 'CN', display_name: 'Продление сессии пользователя' },
+  { key: 'CN', display_name: 'Завершение сессии пользователя' }
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
@@ -188,9 +245,11 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
   return acc
 }, {})
 
+// TodayDate = new Date();
+
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  // components: { Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -203,6 +262,9 @@ export default {
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
+    },
+    substrFilter(system) {
+      return system.substr(0, 30)
     }
   },
   data() {
@@ -223,7 +285,12 @@ export default {
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['Обработан', 'Не обраб.', 'Удалено'],
-      showReviewer: false,
+      showSystem: true,
+      showIogv: true,
+      showFio: true,
+      showLogin: true,
+      showDate: true,
+      showEvent: true,
       temp: {
         id: undefined,
         importance: 1,
@@ -255,7 +322,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      statsList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
 
@@ -396,7 +463,38 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    }
+    },
+
+    pickerOptions: {
+      shortcuts: [{
+        text: 'Last week',
+        onClick(picker) {
+          const end = new Date()
+          const start = new Date()
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+          picker.$emit('pick', [start, end])
+        }
+      }, {
+        text: 'Last month',
+        onClick(picker) {
+          const end = new Date()
+          const start = new Date()
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+          picker.$emit('pick', [start, end])
+        }
+      }, {
+        text: 'Last 3 months',
+        onClick(picker) {
+          const end = new Date()
+          const start = new Date()
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+          picker.$emit('pick', [start, end])
+        }
+      }]
+    },
+    // value1: [new Date(2000, 10, 10, 10, 10), new Date(TodayDate.getUTCFullYear(), TodayDate.getUTCMonth(), TodayDate.getUTCDay(), TodayDate.getUTCHours(), TodayDate.getUTCMinutes())]
+    value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+    value2: ''
   }
 }
 </script>
