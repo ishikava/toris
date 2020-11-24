@@ -1,0 +1,17 @@
+{
+  "autoload": {
+    "psr-4": {
+      "App\\": "app"
+    },
+    "classmap": [
+      "app/"
+    ]
+  },
+  "require": {
+    "ext-json": "*",
+    "ext-pgsql": "*"
+  },
+  "name": "ishikava/dashboards_api",
+  "description": "Simple api for OVIRUG data",
+  "license": "proprietary"
+}

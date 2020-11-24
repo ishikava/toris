@@ -39,4 +39,3 @@ export function GroupList(query) {
     params: query
   })
 }
-
