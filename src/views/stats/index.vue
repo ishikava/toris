@@ -1,6 +1,18 @@
 <template>
   <div class="app-container">
 
+    <div class="components-container">
+      <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-drag-select>
+
+      <div style="margin-top:30px;">
+        <el-tag v-for="item of value" :key="item" style="margin-right:15px;">
+          {{ item }}
+        </el-tag>
+      </div>
+    </div>
+
     <div class="filter-container">
       <el-input v-model="listQuery.title" placeholder="Поиск по Логину и ФИО" style="width: 300px; float: left;" class="filter-item" @keyup.enter.native="handleFilter" />
 
@@ -221,6 +233,7 @@ import { statsList } from '@/api/remote-search'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 // import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import ElDragSelect from '@/components/DragSelect' // base on element-ui
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'Аутентификация пользователя' },
@@ -250,6 +263,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 export default {
   name: 'ComplexTable',
   // components: { Pagination },
+  components: { ElDragSelect },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -313,7 +327,25 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+
+      value: ['Apple', 'Banana', 'Orange'],
+      options: [{
+        value: 'Apple',
+        label: 'Apple'
+      }, {
+        value: 'Banana',
+        label: 'Banana'
+      }, {
+        value: 'Orange',
+        label: 'Orange'
+      }, {
+        value: 'Pear',
+        label: 'Pear'
+      }, {
+        value: 'Strawberry',
+        label: 'Strawberry'
+      }]
     }
   },
   created() {

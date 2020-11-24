@@ -112,6 +112,18 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
+        path: 'new_stats',
+        component: () => import('@/views/new_stats/index'),
+        name: 'Statistics',
+        meta: { title: '!!!Статистика', icon: 'nested', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
         path: 'monitoring',
         component: () => import('@/views/monitoring/index'),
         name: 'Monitoring',
