@@ -87,28 +87,82 @@
     </div>
     <div class="clearfix" />
 
+    <el-table
+      v-loading="listLoading"
+      :data="data_list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+    >
+
+      <el-table-column v-if="showId" label="ID" align="center" min-width="50" sortable="custom" prop="id" :sort-orders="['ascending', 'descending']">
+        <template slot-scope="{row}">
+          <span>{{ row.id }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="showSystem" label="Система" min-width="180" sortable="custom" prop="systems" :sort-orders="['ascending', 'descending']">
+        <template slot-scope="{row}">
+          <span>{{ row.systems }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="showIogv" label="ИОГВ" min-width="180" sortable="custom" prop="iogv" :sort-orders="['ascending', 'descending']">
+        <template slot-scope="{row}">
+          <span>{{ row.iogv }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="showFio" label="ФИО пользователя" min-width="180" sortable="custom" prop="fio" :sort-orders="['ascending', 'descending']">
+        <template slot-scope="{row}">
+          <span>{{ row.fio }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="showLogin" label="Логин" align="center" min-width="120" sortable="custom" prop="login" :sort-orders="['ascending', 'descending']">
+        <template slot-scope="{row}">
+          <span>{{ row.login }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="showDate" label="Дата" align="center" min-width="120" sortable="custom" prop="dates" :sort-orders="['ascending', 'descending']">
+        <template slot-scope="{row}">
+          <span>{{ row.dates }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
+        <template slot-scope="{row}">
+          <span>{{ row.events }}</span>
+        </template>
+      </el-table-column>
+
+    </el-table>
+
     <div>
       <div class="components-container-wrapper2">
         <div class="components-container2">
-          <el-checkbox v-model="showId" class="filter-item" @change="tableKey=tableKey+1">
+          <el-checkbox v-model="showId" class="filter-item">
             ID
           </el-checkbox>
-          <el-checkbox v-model="showSystem" class="filter-item" @change="tableKey=tableKey+1">
+          <el-checkbox v-model="showSystem" class="filter-item">
             Система
           </el-checkbox>
-          <el-checkbox v-model="showIogv" class="filter-item" @change="tableKey=tableKey+1">
+          <el-checkbox v-model="showIogv" class="filter-item">
             ИОГВ
           </el-checkbox>
-          <el-checkbox v-model="showFio" class="filter-item" @change="tableKey=tableKey+1">
+          <el-checkbox v-model="showFio" class="filter-item">
             ФИО
           </el-checkbox>
-          <el-checkbox v-model="showLogin" class="filter-item" @change="tableKey=tableKey+1">
+          <el-checkbox v-model="showLogin" class="filter-item">
             Логин
           </el-checkbox>
-          <el-checkbox v-model="showDate" class="filter-item" @change="tableKey=tableKey+1">
+          <el-checkbox v-model="showDate" class="filter-item">
             Дата
           </el-checkbox>
-          <el-checkbox v-model="showEvent" class="filter-item" @change="tableKey=tableKey+1">
+          <el-checkbox v-model="showEvent" class="filter-item">
             Действие
           </el-checkbox>
         </div>
@@ -120,61 +174,6 @@
 
     </div>
     <div class="clearfix" />
-
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="data_list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-    >
-
-      <el-table-column v-if="showId" label="id" align="center" min-width="50">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column v-if="showSystem" label="Система" min-width="180">
-        <template slot-scope="{row}">
-          <span>{{ row.systems }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column v-if="showIogv" label="ИОГВ" min-width="180">
-        <template slot-scope="{row}">
-          <span>{{ row.iogv }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column v-if="showFio" label="ФИО пользователя" min-width="180">
-        <template slot-scope="{row}">
-          <span>{{ row.fio }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column v-if="showLogin" label="Логин" align="center" min-width="120">
-        <template slot-scope="{row}">
-          <span>{{ row.login }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column v-if="showDate" label="Дата" align="center" min-width="120">
-        <template slot-scope="{row}">
-          <!--          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-          <span>{{ row.dates }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180">
-        <template slot-scope="{row}">
-          <span>{{ row.events }}</span>
-        </template>
-      </el-table-column>
-
-    </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getData" />
 
@@ -193,8 +192,6 @@ export default {
 
   data() {
     return {
-      tableKey: 0,
-
       downloadLoading: false,
 
       choose_systems: null,
@@ -217,10 +214,10 @@ export default {
         events: null,
         search: null,
         start_date: null,
-        end_date: null
+        end_date: null,
+        sort: null
       },
-      listQueryNoLimit: {
-      },
+      listQueryNoLimit: {},
       showId: true,
       showSystem: true,
       showIogv: true,
@@ -319,6 +316,16 @@ export default {
         }
       }))
     },
+    sortChange(data) {
+      const { prop, order } = data
+      if (order === 'ascending') {
+        this.listQuery.sort = '+' + prop
+      } else {
+        this.listQuery.sort = '-' + prop
+      }
+      this.listQuery.page = 1
+      this.getData()
+    },
     handleDownload() {
       this.downloadLoading = true
 
@@ -326,11 +333,59 @@ export default {
         this.data_list_no_limit = response.data.items
 
         import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['id', 'systems', 'iogv', 'fio', 'login', 'dates', 'events']
+          const tHeader = ['id', 'Название Системы', 'ИОГВ', 'Ф.И.О.', 'login', 'Дата', 'Действие']
           const filterVal = ['id', 'systems', 'iogv', 'fio', 'login', 'dates', 'events']
-          const data = this.formatJson(filterVal)
+
+          const filterVal2 = []
+          const tHeader2 = []
+
+          if (this.showId) {
+            filterVal2.push(filterVal[0])
+          }
+          if (this.showSystem) {
+            filterVal2.push(filterVal[1])
+          }
+          if (this.showIogv) {
+            filterVal2.push(filterVal[2])
+          }
+          if (this.showFio) {
+            filterVal2.push(filterVal[3])
+          }
+          if (this.showLogin) {
+            filterVal2.push(filterVal[4])
+          }
+          if (this.showDate) {
+            filterVal2.push(filterVal[5])
+          }
+          if (this.showEvent) {
+            filterVal2.push(filterVal[6])
+          }
+
+          if (this.showId) {
+            tHeader2.push(tHeader[0])
+          }
+          if (this.showSystem) {
+            tHeader2.push(tHeader[1])
+          }
+          if (this.showIogv) {
+            tHeader2.push(tHeader[2])
+          }
+          if (this.showFio) {
+            tHeader2.push(tHeader[3])
+          }
+          if (this.showLogin) {
+            tHeader2.push(tHeader[4])
+          }
+          if (this.showDate) {
+            tHeader2.push(tHeader[5])
+          }
+          if (this.showEvent) {
+            tHeader2.push(tHeader[6])
+          }
+
+          const data = this.formatJson(filterVal2)
           excel.export_json_to_excel({
-            header: tHeader,
+            header: tHeader2,
             data,
             filename: 'Отчет'
           })
@@ -343,6 +398,11 @@ export default {
 </script>
 
 <style>
+  .el-table th{
+    text-align: center;
+    font-weight: bold;
+  }
+
   .search_btn {
     float: left;
   }
@@ -361,8 +421,7 @@ export default {
   }
 
   .components-container2 {
-    margin-top: 0px;
-    margin-bottom: 15px;
+    margin-top: 30px;
   }
 
   .components-container {

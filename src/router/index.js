@@ -95,27 +95,27 @@ export const constantRoutes = [
       }
     ]
   },
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'stats',
+  //       component: () => import('@/views/stats/index'),
+  //       name: 'Statistics',
+  //       meta: { title: 'Статистика', icon: 'nested', affix: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/',
     component: Layout,
     children: [
       {
         path: 'stats',
-        component: () => import('@/views/stats/index'),
-        name: 'Statistics',
-        meta: { title: 'Статистика', icon: 'nested', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/',
-    component: Layout,
-    children: [
-      {
-        path: 'new_stats',
         component: () => import('@/views/new_stats/index'),
         name: 'Statistics',
-        meta: { title: '!!!Статистика', icon: 'nested', affix: true }
+        meta: { title: 'Статистика', icon: 'nested', affix: true }
       }
     ]
   },

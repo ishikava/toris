@@ -38,13 +38,23 @@ if (isset($_GET['events']) && $_GET['events'] != "") {
 }
 
 if (isset($_GET['search']) && $_GET['search'] != "") {
-  $q .= " AND (fio LIKE '%".$_GET['search']."%' OR login LIKE '%".$_GET['search']."%') ";
+  $q .= " AND (fio ILIKE '%".$_GET['search']."%' OR login ILIKE '%".$_GET['search']."%') ";
 }
 
 if (isset($_GET['start_date']) && $_GET['start_date'] != "" && isset($_GET['end_date']) && $_GET['end_date'] != "") {
   $start = date('Y-m-d H:i:s', strtotime($_GET['start_date']));
   $end = date('Y-m-d H:i:s', strtotime($_GET['end_date']));
   $q .= " AND dates >= '".$_GET['start_date']."' AND dates < '".$_GET['end_date']."'";
+}
+
+if (isset($_GET['sort']) && $_GET['sort'] != "") {
+  if (substr($_GET['sort'],0,1) == '-'){
+    $sort = "ORDER BY ".substr($_GET['sort'],1,strlen($_GET['sort']))." DESC";
+  } else {
+    $sort = "ORDER BY ".substr($_GET['sort'],1,strlen($_GET['sort']));
+  }
+} else {
+  $sort = "ORDER BY dates";
 }
 
 $total = pg_query($postgres, "SELECT COUNT (id) FROM events WHERE id > 0 $q");
@@ -54,7 +64,7 @@ $result['total'] = pg_fetch_object($total);
 //echo "SELECT * FROM events WHERE id > 0 $q LIMIT $limit OFFSET $offset";
 //exit();
 
-$res = pg_query($postgres, "SELECT * FROM events WHERE id > 0 $q ORDER BY dates LIMIT $limit OFFSET $offset");
+$res = pg_query($postgres, "SELECT * FROM events WHERE id > 0 $q $sort LIMIT $limit OFFSET $offset");
 
 while ($row = pg_fetch_assoc($res)) {
   $result['items'][] = [
