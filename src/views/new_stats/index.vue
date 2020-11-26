@@ -2,6 +2,43 @@
   <div class="app-container">
 
     <div>
+
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <el-input v-model="listQuery.search" placeholder="Поиск по Логину или ФИО" class="filter-item" @keyup.enter.native="getData" />
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_search" />
+      </div>
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <div class="block">
+            <el-date-picker
+              v-model="dates"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetimerange"
+              :picker-options="pickerOptions"
+              range-separator="|"
+              start-placeholder="Дата"
+              end-placeholder="Дата"
+              align="right"
+            />
+          </div>
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_dates" />
+      </div>
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <el-button class="filter-item search_btn" type="primary" icon="el-icon-search" @click="getData">Сформировать отчет</el-button>
+
+          <el-button :loading="downloadLoading" class="filter-item download_btn" type="primary" icon="el-icon-download" @click="handleDownload">Скачать отчет .xlsx</el-button>
+        </div>
+      </div>
+
+    </div>
+    <div class="clearfix" />
+
+    <div>
+
       <div class="components-container-wrapper">
         <div class="components-container">
           <el-drag-select v-model="choose_systems_value" multiple placeholder="Система" style="width: 100%;">
@@ -34,7 +71,7 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-drag-select v-model="choose_events_value" multiple placeholder="Событие" style="width: 100%;">
+          <el-drag-select v-model="choose_events_value" multiple placeholder="Действие" style="width: 100%;">
             <el-option v-for="item in choose_events" :key="item" :label="item" :value="item" />
           </el-drag-select>
 
@@ -50,9 +87,39 @@
     </div>
     <div class="clearfix" />
 
-    <el-button class="filter-item search_btn" type="primary" icon="el-icon-search" @click="getData">
-      Поиск
-    </el-button>
+    <div>
+      <div class="components-container-wrapper2">
+        <div class="components-container2">
+          <el-checkbox v-model="showId" class="filter-item" @change="tableKey=tableKey+1">
+            ID
+          </el-checkbox>
+          <el-checkbox v-model="showSystem" class="filter-item" @change="tableKey=tableKey+1">
+            Система
+          </el-checkbox>
+          <el-checkbox v-model="showIogv" class="filter-item" @change="tableKey=tableKey+1">
+            ИОГВ
+          </el-checkbox>
+          <el-checkbox v-model="showFio" class="filter-item" @change="tableKey=tableKey+1">
+            ФИО
+          </el-checkbox>
+          <el-checkbox v-model="showLogin" class="filter-item" @change="tableKey=tableKey+1">
+            Логин
+          </el-checkbox>
+          <el-checkbox v-model="showDate" class="filter-item" @change="tableKey=tableKey+1">
+            Дата
+          </el-checkbox>
+          <el-checkbox v-model="showEvent" class="filter-item" @change="tableKey=tableKey+1">
+            Действие
+          </el-checkbox>
+        </div>
+      </div>
+
+      <div class="components-container-wrapper2">
+        <div class="components-container2" />
+      </div>
+
+    </div>
+    <div class="clearfix" />
 
     <el-table
       :key="tableKey"
@@ -64,7 +131,7 @@
       style="width: 100%;"
     >
 
-      <el-table-column label="id" min-width="90">
+      <el-table-column v-if="showId" label="id" align="center" min-width="50">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
@@ -118,6 +185,7 @@
 import ElDragSelect from '@/components/DragSelect'
 import { getData, getEvents, getIogvs, getSystems } from '@/api/remote-search2'
 import Pagination from '@/components/Pagination'
+import { parseTime } from '@/utils'
 
 export default {
   name: 'Stats',
@@ -125,29 +193,69 @@ export default {
 
   data() {
     return {
+      tableKey: 0,
+
+      downloadLoading: false,
+
       choose_systems: null,
       choose_iogvs: null,
       choose_events: null,
       choose_systems_value: [],
       choose_iogvs_value: [],
       choose_events_value: [],
+      dates: [],
 
       total: 0,
       data_list: null,
+      data_list_no_limit: null,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
         systems: null,
         iogvs: null,
-        events: null
+        events: null,
+        search: null,
+        start_date: null,
+        end_date: null
       },
+      listQueryNoLimit: {
+      },
+      showId: true,
       showSystem: true,
       showIogv: true,
       showFio: true,
       showLogin: true,
       showDate: true,
-      showEvent: true
+      showEvent: true,
+
+      pickerOptions: {
+        shortcuts: [{
+          text: 'За 7 дней',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: 'За 1 месяц',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: 'За 3 месяца',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      }
     }
   },
   created() {
@@ -177,6 +285,8 @@ export default {
       this.listQuery.systems = this.choose_systems_value.toString()
       this.listQuery.iogvs = this.choose_iogvs_value.toString()
       this.listQuery.events = this.choose_events_value.toString()
+      this.listQuery.start_date = this.dates[0]
+      this.listQuery.end_date = this.dates[1]
       getData(this.listQuery).then(response => {
         this.data_list = response.data.items
         this.total = parseInt(response.data.total.count)
@@ -191,12 +301,52 @@ export default {
     },
     clear_events() {
       this.choose_events_value = []
+    },
+    clear_search() {
+      this.listQuery.search = null
+    },
+    clear_dates() {
+      this.dates = []
+    },
+
+    // download .xlsx
+    formatJson(filterVal) {
+      return this.data_list_no_limit.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
+    },
+    handleDownload() {
+      this.downloadLoading = true
+
+      getData({ ...this.listQuery, limit: 1000, page: 1 }).then(response => {
+        this.data_list_no_limit = response.data.items
+
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['id', 'systems', 'iogv', 'fio', 'login', 'dates', 'events']
+          const filterVal = ['id', 'systems', 'iogv', 'fio', 'login', 'dates', 'events']
+          const data = this.formatJson(filterVal)
+          excel.export_json_to_excel({
+            header: tHeader,
+            data,
+            filename: 'Отчет'
+          })
+          this.downloadLoading = false
+        })
+      })
     }
   }
 }
 </script>
 
 <style>
+  .search_btn {
+    float: left;
+  }
+
   .components-container-wrapper {
     float: left;
     width: 33%;
@@ -204,9 +354,21 @@ export default {
     position: relative;
   }
 
+  .components-container-wrapper2 {
+    float: left;
+    width: 50%;
+    position: relative;
+  }
+
+  .components-container2 {
+    margin-top: 0px;
+    margin-bottom: 15px;
+  }
+
   .components-container {
     width: 90%;
-    margin: 0;
+    margin-top: 0px;
+    margin-bottom: 15px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -222,5 +384,9 @@ export default {
     -moz-border-radius: 5px;
     border-radius: 5px;
     font-size: 12px;
+  }
+
+  .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner {
+    width: 100%;
   }
 </style>

@@ -27,7 +27,7 @@
       <el-select v-model="listQuery.event" placeholder="Тип события" clearable class="filter-item" style="width: 200px; margin-left: 10px; margin-right: 30px; float: left">
         <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
-
+      <pre>{{ dates }}</pre>
       <div class="block" style="float: left;">
         <span class="demonstration">Дата </span>
         <el-date-picker
