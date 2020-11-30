@@ -5,7 +5,7 @@ $result = [
         "index" => [
             "url" => "http://194.67.109.37/api",
             "method" => "GET/POST",
-            "description" => "API для получения данных по колличеству заключенных договоров ОВИРУГ",
+            "description" => "API для получения данных Статистики",
             "example JSON" => "{}"
         ],
         "get_groups" => [
