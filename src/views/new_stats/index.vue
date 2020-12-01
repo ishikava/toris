@@ -135,7 +135,7 @@
 
       <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
-          <el-tooltip placement="top">
+          <el-tooltip v-if="row.info" placement="top">
             <div slot="content">{{ row.info }}</div>
             <el-button class="info">info</el-button>
           </el-tooltip>
@@ -410,8 +410,7 @@ export default {
 
 <style>
   .info{
-    padding: 5px;
-    margin-right: 10px;
+    padding: 7px 10px;
     float: left;
   }
 
