@@ -67,6 +67,15 @@ $result['total'] = pg_fetch_object($total);
 $res = pg_query($postgres, "SELECT * FROM events WHERE id > 0 $q $sort LIMIT $limit OFFSET $offset");
 
 while ($row = pg_fetch_assoc($res)) {
+
+  $info = [];
+
+  if($res2 = pg_query($postgres, "SELECT * FROM info WHERE event_id = ".$row['id'])) {
+    while ($row2 = pg_fetch_assoc($res2)) {
+      $info[$row2['name']] = $row2['value'];
+    }
+  }
+
   $result['items'][] = [
     'id' => $row['id'],
     'events' => $row['events'],
@@ -74,7 +83,8 @@ while ($row = pg_fetch_assoc($res)) {
     'iogv' => $row['iogv'],
     'login' => $row['login'],
     'systems' => $row['systems'],
-    'dates' => $row['dates']
+    'dates' => $row['dates'],
+    'info' => $info
   ];
 }
 

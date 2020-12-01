@@ -135,7 +135,7 @@
 
       <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
-          <span>{{ row.events }}</span>
+          <span>{{ row.info }}</span>
         </template>
       </el-table-column>
 
