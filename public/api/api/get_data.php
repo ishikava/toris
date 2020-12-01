@@ -84,7 +84,7 @@ while ($row = pg_fetch_assoc($res)) {
     'login' => $row['login'],
     'systems' => $row['systems'],
     'dates' => $row['dates'],
-    'info' => implode(' : ', $info)
+    'info' => $info
   ];
 }
 
