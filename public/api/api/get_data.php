@@ -68,7 +68,7 @@ $res = pg_query($postgres, "SELECT * FROM events WHERE id > 0 $q $sort LIMIT $li
 
 while ($row = pg_fetch_assoc($res)) {
 
-  $info = [];
+  $info = null;
 
   if($res2 = pg_query($postgres, "SELECT * FROM info WHERE event_id = ".$row['id'])) {
     while ($row2 = pg_fetch_assoc($res2)) {
