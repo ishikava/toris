@@ -136,7 +136,7 @@
       <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <el-tooltip v-if="row.info" placement="top">
-            <div slot="content">{{ row.info }}</div>
+            <div slot="content">{{ row.info | infoFilter }}</div>
             <el-button class="info">info</el-button>
           </el-tooltip>
           <span>{{ row.events }}</span>
@@ -197,7 +197,8 @@ export default {
   filters: {
     infoFilter(str) {
       const result = Object.keys(str).map((key) => [key, str[key]])
-      return result.join(' | ')
+      const arr = result.join('   |   ')
+      return arr.replace(new RegExp(',', 'g'), ' : ')
     }
   },
 
