@@ -135,7 +135,12 @@
 
       <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
-          <span>{{ row.info }}</span>
+          <el-tooltip placement="top">
+            <div slot="content">{{ row.info }}</div>
+            <el-button class="info">info</el-button>
+          </el-tooltip>
+
+          <span>{{ row.events }}</span>
         </template>
       </el-table-column>
 
@@ -398,7 +403,12 @@ export default {
 </script>
 
 <style>
-  .el-table th{
+  .info {
+    padding: 7px 10px;
+    border-radius: 5px;
+  }
+
+  .el-table th {
     text-align: center;
     font-weight: bold;
   }
