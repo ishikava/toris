@@ -54,7 +54,7 @@ if (isset($_GET['sort']) && $_GET['sort'] != "") {
     $sort = "ORDER BY ".substr($_GET['sort'],1,strlen($_GET['sort']));
   }
 } else {
-  $sort = "ORDER BY dates";
+  $sort = "ORDER BY dates DESC";
 }
 
 $total = pg_query($postgres, "SELECT COUNT (id) FROM events WHERE id > 0 $q");
