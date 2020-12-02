@@ -68,14 +68,6 @@ $res = pg_query($postgres, "SELECT * FROM events WHERE id > 0 $q $sort LIMIT $li
 
 while ($row = pg_fetch_assoc($res)) {
 
-  $info = null;
-
-  if($res2 = pg_query($postgres, "SELECT * FROM info WHERE event_id = ".$row['id'])) {
-    while ($row2 = pg_fetch_assoc($res2)) {
-      $info[$row2['name']] = $row2['value'];
-    }
-  }
-
   $result['items'][] = [
     'id' => $row['id'],
     'events' => $row['events'],
@@ -84,7 +76,7 @@ while ($row = pg_fetch_assoc($res)) {
     'login' => $row['login'],
     'systems' => $row['systems'],
     'dates' => $row['dates'],
-    'info' => $info
+    'info' => json_decode($row['info'], JSON_UNESCAPED_UNICODE)
   ];
 }
 

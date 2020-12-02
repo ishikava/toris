@@ -28,20 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     ];
   } else {
 
-    $res = pg_query_params($postgres, "INSERT INTO public.events( events, fio, iogv, login, systems, dates)
-	VALUES ( $1, $2, $3, $4, $5, '" . date('Y-m-d H:i:s', time()) . "') RETURNING id",
-      array($request['event'], "Неавторизованный пользователь", $request['iogv'], "no login", $request['system']));
-
-    $id_obj = pg_fetch_assoc($res);
-
-    if ($request['info'] && $request['info'] !== '' && $request['info'] !== '{}'){
-
-      foreach ($request['info'] as $key => $value){
-        $res = pg_query_params($postgres, "INSERT INTO public.info(event_id, name, value)
-	VALUES (".$id_obj['id'].", $1, $2);", array($key, $value));
-      }
-
-    }
+    $res = pg_query_params($postgres, "INSERT INTO public.events( events, fio, iogv, login, systems, dates, info)
+	VALUES ( $1, $2, $3, $4, $5, '" . date('Y-m-d H:i:s', time()) . "', $6)",
+      array($request['event'], "Неавторизованный пользователь", $request['iogv'], "no login", $request['system'], json_encode($request['info'])));
 
     if (pg_last_error() !== "") {
       $result = [
