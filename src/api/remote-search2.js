@@ -32,3 +32,11 @@ export function getData(query) {
   })
 }
 
+export function getSuggest(query) {
+  return request({
+    url: '/get_suggest',
+    method: 'get',
+    params: query
+  })
+}
+

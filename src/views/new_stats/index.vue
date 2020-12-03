@@ -5,7 +5,16 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-input v-model="listQuery.search" placeholder="Поиск по Логину или ФИО" class="filter-item" @keyup.enter.native="getData" />
+          <el-autocomplete
+            v-model="listQuery.search"
+            placeholder="Поиск по Логину или ФИО"
+            class="inline-input"
+            style="width: 100%;"
+            :fetch-suggestions="getSuggest"
+            :trigger-on-focus="false"
+            @keyup.enter.native="getData"
+            @select="getData"
+          />
         </div>
         <div class="clear_x el-icon-close" @click="clear_search" />
       </div>
@@ -28,9 +37,11 @@
       </div>
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-button class="filter-item search_btn" type="primary" icon="el-icon-search" @click="getData">Сформировать отчет</el-button>
+          <div class="btn_cont"><el-button class="filter-item btn_margin" type="default" icon="el-icon-close" @click="clear_all">Очистить</el-button></div>
 
-          <el-button :loading="downloadLoading" class="filter-item download_btn" type="primary" icon="el-icon-download" @click="handleDownload">Скачать отчет .xlsx</el-button>
+          <div class="btn_cont"><el-button class="filter-item btn_margin" type="primary" icon="el-icon-search" @click="getData">Поиск</el-button></div>
+
+          <div class="btn_cont"><el-button class="filter-item btn_margin" type="primary" icon="el-icon-download" :loading="downloadLoading" @click="handleDownload">Скачать .xlsx</el-button></div>
         </div>
       </div>
 
@@ -41,7 +52,7 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-drag-select v-model="choose_systems_value" multiple placeholder="Система" style="width: 100%;">
+          <el-drag-select v-model="choose_systems_value" multiple filterable placeholder="Система" style="width: 100%;">
             <el-option v-for="item in choose_systems" :key="item" :label="item" :value="item" />
           </el-drag-select>
 
@@ -56,7 +67,7 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-drag-select v-model="choose_iogvs_value" multiple placeholder="ИОГВ" style="width: 100%;">
+          <el-drag-select v-model="choose_iogvs_value" multiple filterable placeholder="ИОГВ" style="width: 100%;">
             <el-option v-for="item in choose_iogvs" :key="item" :label="item" :value="item" />
           </el-drag-select>
 
@@ -71,7 +82,7 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-drag-select v-model="choose_events_value" multiple placeholder="Действие" style="width: 100%;">
+          <el-drag-select v-model="choose_events_value" multiple filterable placeholder="Действие" style="width: 100%;">
             <el-option v-for="item in choose_events" :key="item" :label="item" :value="item" />
           </el-drag-select>
 
@@ -82,6 +93,40 @@
           </div>
         </div>
         <div class="clear_x el-icon-close" @click="clear_events" />
+      </div>
+
+    </div>
+    <div class="clearfix" />
+
+    <div>
+      <div class="components-container-wrapper2">
+        <div class="components-container2">
+          <el-checkbox v-model="showId" class="filter-item">
+            ID
+          </el-checkbox>
+          <el-checkbox v-model="showSystem" class="filter-item">
+            Система
+          </el-checkbox>
+          <el-checkbox v-model="showIogv" class="filter-item">
+            ИОГВ
+          </el-checkbox>
+          <el-checkbox v-model="showFio" class="filter-item">
+            ФИО
+          </el-checkbox>
+          <el-checkbox v-model="showLogin" class="filter-item">
+            Логин
+          </el-checkbox>
+          <el-checkbox v-model="showDate" class="filter-item">
+            Дата
+          </el-checkbox>
+          <el-checkbox v-model="showEvent" class="filter-item">
+            Действие
+          </el-checkbox>
+        </div>
+      </div>
+
+      <div class="components-container-wrapper2">
+        <div class="components-container2" />
       </div>
 
     </div>
@@ -145,40 +190,6 @@
 
     </el-table>
 
-    <div>
-      <div class="components-container-wrapper2">
-        <div class="components-container2">
-          <el-checkbox v-model="showId" class="filter-item">
-            ID
-          </el-checkbox>
-          <el-checkbox v-model="showSystem" class="filter-item">
-            Система
-          </el-checkbox>
-          <el-checkbox v-model="showIogv" class="filter-item">
-            ИОГВ
-          </el-checkbox>
-          <el-checkbox v-model="showFio" class="filter-item">
-            ФИО
-          </el-checkbox>
-          <el-checkbox v-model="showLogin" class="filter-item">
-            Логин
-          </el-checkbox>
-          <el-checkbox v-model="showDate" class="filter-item">
-            Дата
-          </el-checkbox>
-          <el-checkbox v-model="showEvent" class="filter-item">
-            Действие
-          </el-checkbox>
-        </div>
-      </div>
-
-      <div class="components-container-wrapper2">
-        <div class="components-container2" />
-      </div>
-
-    </div>
-    <div class="clearfix" />
-
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getData" />
 
   </div>
@@ -186,7 +197,7 @@
 
 <script>
 import ElDragSelect from '@/components/DragSelect'
-import { getData, getEvents, getIogvs, getSystems } from '@/api/remote-search2'
+import { getData, getEvents, getIogvs, getSuggest, getSystems } from '@/api/remote-search2'
 import Pagination from '@/components/Pagination'
 import { parseTime } from '@/utils'
 
@@ -274,6 +285,13 @@ export default {
     this.getData()
   },
   methods: {
+    getSuggest(queryString, cb) {
+      const q = {}
+      q.search = queryString
+      getSuggest(q).then(response => {
+        cb(response.data)
+      })
+    },
     getSystems() {
       getSystems().then(response => {
         this.choose_systems = response.data
@@ -316,6 +334,14 @@ export default {
     },
     clear_dates() {
       this.dates = []
+    },
+    clear_all() {
+      this.choose_systems_value = []
+      this.choose_iogvs_value = []
+      this.choose_events_value = []
+      this.listQuery.search = null
+      this.dates = []
+      this.getData()
     },
 
     // download .xlsx
@@ -410,7 +436,7 @@ export default {
 </script>
 
 <style>
-  .info{
+  .info {
     padding: 7px 10px;
     float: left;
   }
@@ -418,10 +444,6 @@ export default {
   .el-table th {
     text-align: center;
     font-weight: bold;
-  }
-
-  .search_btn {
-    float: left;
   }
 
   .components-container-wrapper {
@@ -438,11 +460,12 @@ export default {
   }
 
   .components-container2 {
-    margin-top: 30px;
+    margin-bottom: 15px;
   }
 
   .components-container {
     width: 90%;
+    float: left;
     margin-top: 0px;
     margin-bottom: 15px;
     margin-left: auto;
@@ -451,7 +474,7 @@ export default {
 
   .clear_x {
     position: absolute;
-    right: -3px;
+    right: 22px;
     top: 8px;
     color: #ccc;
     border: 1px solid #ccc;
@@ -464,5 +487,15 @@ export default {
 
   .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner {
     width: 100%;
+  }
+
+  .btn_cont{
+    float: left;
+    width: 33.3%;
+  }
+
+  .btn_margin{
+    width: 90%;
+    float: left;
   }
 </style>
