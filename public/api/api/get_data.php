@@ -10,8 +10,8 @@ if ($offset < 0) {
 
 $q = '';
 
-if (isset($_GET['systems']) && $_GET['systems'] != "") {
-  $systems = explode(',', $_GET['systems']);
+if (isset($_GET['system_name']) && $_GET['system_name'] != "") {
+  $systems = explode(',', $_GET['system_name']);
   $sys = [];
   foreach ($systems as $system) {
     $sys[] = "'" . $system . "'";
@@ -24,8 +24,8 @@ if (isset($_GET['systems']) && $_GET['systems'] != "") {
   $q .= " AND system_id IN (" . implode(',', $system_ids) . ") ";
 }
 
-if (isset($_GET['iogvs']) && $_GET['iogvs'] != "") {
-  $iogvs = explode(',', $_GET['iogvs']);
+if (isset($_GET['iogv_name']) && $_GET['iogv_name'] != "") {
+  $iogvs = explode(',', $_GET['iogv_name']);
   $iog = [];
   foreach ($iogvs as $iogv) {
     $iog[] = "'" . $iogv . "'";
@@ -38,8 +38,8 @@ if (isset($_GET['iogvs']) && $_GET['iogvs'] != "") {
   $q .= " AND iogv_id IN (" . implode(',', $iogv_ids) . ") ";
 }
 
-if (isset($_GET['events']) && $_GET['events'] != "") {
-  $events = explode(',', $_GET['events']);
+if (isset($_GET['event_name']) && $_GET['event_name'] != "") {
+  $events = explode(',', $_GET['event_name']);
   $eve = [];
   foreach ($events as $event) {
     $eve[] = "'" . $event . "'";
