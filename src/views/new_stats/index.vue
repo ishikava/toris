@@ -401,7 +401,7 @@ export default {
 
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = ['id', 'Название Системы', 'ИОГВ', 'Ф.И.О.', 'login', 'Дата', 'Действие']
-          const filterVal = ['uid', 'system_name', 'iogv_name', 'fullname', 'login', 'date', 'event_name']
+          const filterVal = ['id', 'system_name', 'iogv_name', 'fullname', 'login', 'date', 'event_name']
 
           const filterVal2 = []
           const tHeader2 = []
