@@ -1,9 +1,9 @@
 <?php
 
-$res = pg_query($postgres, "SELECT DISTINCT events FROM events ORDER BY events");
+$res = pg_query($postgres, "SELECT event_name FROM event ORDER BY event_name");
 
 while ($row = pg_fetch_assoc($res)) {
-  $result[] = $row['events'];
+  $result[] = $row['event_name'];
 }
 
 

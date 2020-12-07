@@ -155,27 +155,27 @@
       @sort-change="sortChange"
     >
 
-      <el-table-column v-if="showId" label="ID" align="center" min-width="50" sortable="custom" prop="id" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showId" label="ID" align="center" min-width="50" sortable="custom" prop="uid" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showSystem" label="Система" show-overflow-tooltip min-width="180" sortable="custom" prop="systems" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showSystem" label="Система" show-overflow-tooltip min-width="180" sortable="custom" prop="system_name" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
-          <span>{{ row.systems }}</span>
+          <span>{{ row.system_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showIogv" label="ИОГВ" show-overflow-tooltip min-width="180" sortable="custom" prop="iogv" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showIogv" label="ИОГВ" show-overflow-tooltip min-width="180" sortable="custom" prop="iogv_name" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
-          <span>{{ row.iogv }}</span>
+          <span>{{ row.iogv_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showFio" label="ФИО пользователя" show-overflow-tooltip min-width="180" sortable="custom" prop="fio" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showFio" label="ФИО пользователя" show-overflow-tooltip min-width="180" sortable="custom" prop="lastname" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
-          <span>{{ row.fio }}</span>
+          <span>{{ row.lastname + " " + row.name + " " + row.patronymic }}</span>
         </template>
       </el-table-column>
 
@@ -185,19 +185,19 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showDate" label="Дата" align="center" min-width="120" sortable="custom" prop="dates" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showDate" label="Дата" align="center" min-width="120" sortable="custom" prop="date" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
-          <span>{{ row.dates }}</span>
+          <span>{{ row.date }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showEvent" label="Действие" show-overflow-tooltip align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showEvent" label="Действие" show-overflow-tooltip align="center" min-width="180" sortable="custom" prop="event_name" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <el-tooltip v-if="row.info" placement="top">
             <div slot="content">{{ row.info | infoFilter }}</div>
             <el-button class="info">info</el-button>
           </el-tooltip>
-          <span>{{ row.events }}</span>
+          <span>{{ row.event_name }}</span>
         </template>
       </el-table-column>
 
@@ -245,9 +245,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        systems: null,
-        iogvs: null,
-        events: null,
+        system_name: null,
+        iogv_name: null,
+        event_name: null,
         search: null,
         start_date: null,
         end_date: null,
@@ -336,9 +336,9 @@ export default {
       // }, 10)
 
       this.listLoading = true
-      this.listQuery.systems = this.choose_systems_value.toString()
-      this.listQuery.iogvs = this.choose_iogvs_value.toString()
-      this.listQuery.events = this.choose_events_value.toString()
+      this.listQuery.system_name = this.choose_systems_value.toString()
+      this.listQuery.iogv_name = this.choose_iogvs_value.toString()
+      this.listQuery.event_name = this.choose_events_value.toString()
       this.listQuery.start_date = this.dates[0]
       this.listQuery.end_date = this.dates[1]
       getData(this.listQuery).then(response => {
@@ -401,7 +401,7 @@ export default {
 
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = ['id', 'Название Системы', 'ИОГВ', 'Ф.И.О.', 'login', 'Дата', 'Действие']
-          const filterVal = ['id', 'systems', 'iogv', 'fio', 'login', 'dates', 'events']
+          const filterVal = ['uid', 'system_name', 'iogv_name', 'fullname', 'login', 'date', 'event_name']
 
           const filterVal2 = []
           const tHeader2 = []
