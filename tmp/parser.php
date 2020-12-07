@@ -28,22 +28,28 @@ $out = '';
 
 $grp = [];
 
-for ($i = 0; $i < 1000; $i++) {
+$values = [];
 
-  $t1 = array_rand($names);
+for ($j = 0; $j < 100000; $j++) {
 
-  $t2 = $system_list[array_rand($system_list)];
+  for ($i = 0; $i < 50; $i++) {
+    $t1 = array_rand($names);
 
-  if(!in_array($t2, $grp)){
-    $grp[] = $t2;
+    $t2 = $system_list[array_rand($system_list)];
 
+    if (!in_array($t2, $grp)) {
+      $grp[] = $t2;
 
-    $res = pg_query($postgres, "INSERT INTO public.events( events, fio, iogv, login, systems, dates)
-	VALUES ( '".$events[array_rand($events)]."', '".$names[$t1]."', '".$iogv[array_rand($iogv)]."', '".$users[$t1]."', '".$system_list[array_rand($system_list)]."', '".date('Y-m-d H:i:s',time()-rand(0,999999))."')");
+      $values[] = "( '" . $events[array_rand($events)] . "', '" . $names[$t1] . "', '" . $iogv[array_rand($iogv)] . "', '" . $users[$t1] . "', '" . $system_list[array_rand($system_list)] . "', '" . date('Y-m-d H:i:s', time() - rand(0, 60 * 60 * 24 * 365 * 5)) . "', NULL)";
 
+    }
 
   }
 
+  $res = pg_query($postgres, "INSERT INTO public.events( events, fio, iogv, login, systems, dates, info) VALUES" . implode(', ', $values));
+
+  sleep(1);
+}
 
 
 //  $out .= '{
@@ -55,7 +61,7 @@ for ($i = 0; $i < 1000; $i++) {
 //        "event": "' . $events[array_rand($events)] . '"
 //      },
 //      ';
-}
+
 
 //$res = '{
 //  "code": 20000,

@@ -18,6 +18,7 @@
         </div>
         <div class="clear_x el-icon-close" @click="clear_search" />
       </div>
+
       <div class="components-container-wrapper">
         <div class="components-container">
           <div class="block">
@@ -30,18 +31,26 @@
               start-placeholder="Дата"
               end-placeholder="Дата"
               align="right"
+              @change="getData"
             />
           </div>
         </div>
         <div class="clear_x el-icon-close" @click="clear_dates" />
       </div>
+
       <div class="components-container-wrapper">
         <div class="components-container">
-          <div class="btn_cont"><el-button class="filter-item btn_margin" type="default" icon="el-icon-close" @click="clear_all">Очистить</el-button></div>
+          <div class="btn_cont">
+            <el-button class="filter-item btn_margin" type="default" icon="el-icon-close" @click="clear_all">Очистить</el-button>
+          </div>
 
-          <div class="btn_cont"><el-button class="filter-item btn_margin" type="primary" icon="el-icon-search" @click="getData">Поиск</el-button></div>
+          <div class="btn_cont">
+            <el-button class="filter-item btn_margin" type="primary" @click="getData">Отправить</el-button>
+          </div>
 
-          <div class="btn_cont"><el-button class="filter-item btn_margin" type="primary" icon="el-icon-download" :loading="downloadLoading" @click="handleDownload">Скачать .xlsx</el-button></div>
+          <div class="btn_cont">
+            <el-button class="filter-item btn_margin" type="primary" icon="el-icon-download" :loading="downloadLoading" @click="handleDownload">Скачать .xlsx</el-button>
+          </div>
         </div>
       </div>
 
@@ -52,7 +61,7 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-drag-select v-model="choose_systems_value" multiple filterable placeholder="Система" style="width: 100%;">
+          <el-drag-select v-model="choose_systems_value" multiple filterable placeholder="Система" style="width: 100%;" @change="getData">
             <el-option v-for="item in choose_systems" :key="item" :label="item" :value="item" />
           </el-drag-select>
 
@@ -67,7 +76,7 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-drag-select v-model="choose_iogvs_value" multiple filterable placeholder="ИОГВ" style="width: 100%;">
+          <el-drag-select v-model="choose_iogvs_value" multiple filterable placeholder="ИОГВ" style="width: 100%;" @change="getData">
             <el-option v-for="item in choose_iogvs" :key="item" :label="item" :value="item" />
           </el-drag-select>
 
@@ -82,7 +91,7 @@
 
       <div class="components-container-wrapper">
         <div class="components-container">
-          <el-drag-select v-model="choose_events_value" multiple filterable placeholder="Действие" style="width: 100%;">
+          <el-drag-select v-model="choose_events_value" multiple filterable placeholder="Действие" style="width: 100%;" @change="getData">
             <el-option v-for="item in choose_events" :key="item" :label="item" :value="item" />
           </el-drag-select>
 
@@ -126,7 +135,11 @@
       </div>
 
       <div class="components-container-wrapper2">
-        <div class="components-container2" />
+        <div class="components-container2">
+          <div class="btn_cont2">
+            <el-button class="filter-item  btn_margin" type="primary" @click="saveFilter">Сохранить текущие настройки</el-button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -148,25 +161,25 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showSystem" label="Система" min-width="180" sortable="custom" prop="systems" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showSystem" label="Система" show-overflow-tooltip min-width="180" sortable="custom" prop="systems" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <span>{{ row.systems }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showIogv" label="ИОГВ" min-width="180" sortable="custom" prop="iogv" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showIogv" label="ИОГВ" show-overflow-tooltip min-width="180" sortable="custom" prop="iogv" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <span>{{ row.iogv }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showFio" label="ФИО пользователя" min-width="180" sortable="custom" prop="fio" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showFio" label="ФИО пользователя" show-overflow-tooltip min-width="180" sortable="custom" prop="fio" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <span>{{ row.fio }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showLogin" label="Логин" align="center" min-width="120" sortable="custom" prop="login" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showLogin" label="Логин" show-overflow-tooltip align="center" min-width="120" sortable="custom" prop="login" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <span>{{ row.login }}</span>
         </template>
@@ -178,7 +191,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showEvent" label="Действие" show-overflow-tooltip align="center" min-width="180" sortable="custom" prop="events" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <el-tooltip v-if="row.info" placement="top">
             <div slot="content">{{ row.info | infoFilter }}</div>
@@ -285,6 +298,9 @@ export default {
     this.getData()
   },
   methods: {
+    saveFilter() {
+      this.getData()
+    },
     getSuggest(queryString, cb) {
       const q = {}
       q.search = queryString
@@ -308,6 +324,17 @@ export default {
       })
     },
     getData() {
+      // const loading = this.$loading({
+      //   lock: true,
+      //   text: '0 %'
+      // })
+      //
+      // let counter = 0;
+      // let timer = setInterval(() => {
+      //   loading.text = counter+" %";
+      //   if(counter < 100) counter++
+      // }, 10)
+
       this.listLoading = true
       this.listQuery.systems = this.choose_systems_value.toString()
       this.listQuery.iogvs = this.choose_iogvs_value.toString()
@@ -318,6 +345,8 @@ export default {
         this.data_list = response.data.items
         this.total = parseInt(response.data.total.count)
         this.listLoading = false
+        // loading.close()
+        // clearInterval(timer)
       })
     },
     clear_systems() {
@@ -483,18 +512,25 @@ export default {
     -moz-border-radius: 5px;
     border-radius: 5px;
     font-size: 12px;
+    cursor: pointer;
   }
 
   .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner {
     width: 100%;
   }
 
-  .btn_cont{
+  .btn_cont {
     float: left;
     width: 33.3%;
   }
 
-  .btn_margin{
+  .btn_cont2 {
+    float: right;
+    width: 33.3%;
+    margin-bottom: 15px;
+  }
+
+  .btn_margin {
     width: 90%;
     float: left;
   }

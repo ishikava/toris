@@ -64,6 +64,8 @@ $result['total'] = pg_fetch_object($total);
 //echo "SELECT * FROM events WHERE id > 0 $q LIMIT $limit OFFSET $offset";
 //exit();
 
+//sleep(1);
+
 $res = pg_query($postgres, "SELECT * FROM events WHERE id > 0 $q $sort LIMIT $limit OFFSET $offset");
 
 while ($row = pg_fetch_assoc($res)) {
