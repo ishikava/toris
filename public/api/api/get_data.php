@@ -1,5 +1,7 @@
 <?php
 
+$start = microtime(true);
+
 $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
 
 $offset = isset($_GET['page']) ? intval($_GET['page']) * $limit - $limit : 0;
@@ -90,36 +92,90 @@ if (isset($_GET['sort']) && $_GET['sort'] != "") {
   $sort = "ORDER BY date DESC, uid ASC";
 }
 
-$total = pg_query($postgres, "SELECT COUNT(events_data.id) FROM events_data
+//группировка по системам
+if (isset($_GET['groupby_system']) && $_GET['groupby_system'] != "") {
+
+  //total
+  $total = pg_query($postgres, "
+SELECT COUNT(*) FROM (
+SELECT system_name, iogv_name, event_name, COUNT(event_name) FROM events_data
+JOIN system ON (system.id = events_data.system_id)
+JOIN iogv ON (iogv.id = events_data.iogv_id)
+JOIN event ON (event.id = events_data.event_id)
+WHERE events_data.id > 0 $q
+GROUP BY system_name, iogv_name, event_name) as cnt");
+
+  $result['total'] = pg_fetch_object($total);
+
+  //rowspan
+  $rowspan = [];
+  $res_event = pg_query($postgres, "SELECT COUNT(*) FROM (SELECT DISTINCT(iogv_name) FROM iogv) as cnt");
+  $res_event = pg_fetch_object($res_event);
+  $rowspan[] = intval($res_event->count);
+  $res_event = pg_query($postgres, "SELECT COUNT(*) FROM (SELECT DISTINCT(event_name) FROM event) as cnt");
+  $res_event = pg_fetch_object($res_event);
+  $rowspan[] = intval($res_event->count);
+
+  $result['rowspan'] = $rowspan;
+
+  //data
+  $res = pg_query($postgres, "SELECT system_name, iogv_name, event_name, COUNT(event_name) FROM events_data
+JOIN system ON (system.id = events_data.system_id)
+JOIN iogv ON (iogv.id = events_data.iogv_id)
+JOIN event ON (event.id = events_data.event_id)
+WHERE events_data.id > 0 $q
+GROUP BY system_name, iogv_name, event_name ORDER BY system_name, iogv_name, event_name LIMIT $limit OFFSET $offset");
+
+  while ($row = pg_fetch_assoc($res)) {
+    $result['items'][] = [
+      'system_name' => $row['system_name'],
+      'iogv_name' => $row['iogv_name'],
+      'event_name' => $row['event_name'],
+      'amount' => $row['count']
+    ];
+  }
+
+//запишем в базу время работы тяжелого запроса
+$end = microtime(true);
+$res = pg_query($postgres, "INSERT INTO public.timer(timer_query, timer_time)	VALUES ('" . serialize($_GET) . "', " . ($end - $start) . ");");
+
+//без группировок
+} else {
+
+  $total = pg_query($postgres, "SELECT COUNT(events_data.id) FROM events_data
   JOIN system ON (events_data.system_id = system.id)
   JOIN iogv ON (events_data.iogv_id = iogv.id)
   JOIN event ON (events_data.event_id = event.id)
   JOIN public.user ON (events_data.user_id = public.user.id)
   WHERE events_data.id > 0 $q");
 
-$result['total'] = pg_fetch_object($total);
+  $result['total'] = pg_fetch_object($total);
 
-$res = pg_query($postgres, "SELECT *, events_data.id as uid FROM events_data
+  $res = pg_query($postgres, "SELECT *, events_data.id as uid FROM events_data
   JOIN system ON (events_data.system_id = system.id)
   JOIN iogv ON (events_data.iogv_id = iogv.id)
   JOIN event ON (events_data.event_id = event.id)
   JOIN public.user ON (events_data.user_id = public.user.id)
   WHERE events_data.id > 0 $q $sort LIMIT $limit OFFSET $offset");
 
-while ($row = pg_fetch_assoc($res)) {
+  while ($row = pg_fetch_assoc($res)) {
 
-  $result['items'][] = [
-    'id' => $row['uid'],
-    'event_name' => $row['event_name'],
-    'name' => $row['name'],
-    'lastname' => $row['lastname'],
-    'patronymic' => $row['patronymic'],
-    'fullname' => $row['lastname'].' '.$row['name'].' '.$row['patronymic'],
-    'iogv_name' => $row['iogv_name'],
-    'login' => $row['login'],
-    'system_name' => $row['system_name'],
-    'date' => date('Y-m-d H:i:s', $row['date'])
-    //   'info' => json_decode($row['info_value'], JSON_UNESCAPED_UNICODE)
-  ];
+    $result['items'][] = [
+      'id' => $row['uid'],
+      'event_name' => $row['event_name'],
+      'name' => $row['name'],
+      'lastname' => $row['lastname'],
+      'patronymic' => $row['patronymic'],
+      'fullname' => $row['lastname'] . ' ' . $row['name'] . ' ' . $row['patronymic'],
+      'iogv_name' => $row['iogv_name'],
+      'login' => $row['login'],
+      'system_name' => $row['system_name'],
+      'date' => date('Y-m-d H:i:s', $row['date'])
+      //   'info' => json_decode($row['info_value'], JSON_UNESCAPED_UNICODE)
+    ];
+  }
+
 }
+
+
 

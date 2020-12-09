@@ -131,6 +131,10 @@
           <el-checkbox v-model="showEvent" class="filter-item">
             Действие
           </el-checkbox>
+          <br> <br>
+          <el-checkbox v-model="showGroupbySystem" class="filter-item" style="margin-left:15px;" @change="groupbySystem">
+            Сгруппировать по системам
+          </el-checkbox>
         </div>
       </div>
 
@@ -148,6 +152,7 @@
     <el-table
       v-loading="listLoading"
       :data="data_list"
+      :span-method="objectSpanMethod"
       border
       fit
       highlight-current-row
@@ -191,7 +196,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showEvent" label="Действие" show-overflow-tooltip align="center" min-width="180" sortable="custom" prop="event_name" :sort-orders="['ascending', 'descending']">
+      <el-table-column v-if="showEvent" label="Действие" show-overflow-tooltip min-width="180" align="center" sortable="custom" prop="event_name" :sort-orders="['ascending', 'descending']">
         <template slot-scope="{row}">
           <el-tooltip v-if="row.info" placement="top">
             <div slot="content">{{ row.info | infoFilter }}</div>
@@ -199,6 +204,45 @@
           </el-tooltip>
           <span>{{ row.event_name }}</span>
         </template>
+      </el-table-column>
+
+      <el-table-column v-if="showRow1" label="Период 1">
+        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name">
+          <template slot-scope="{row}">
+            <span>{{ row.event_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.amount }}</span>
+          </template>
+        </el-table-column>
+      </el-table-column>
+
+      <el-table-column v-if="showRow2" label="Период 2">
+        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name">
+          <template slot-scope="{row}">
+            <span>{{ row.event_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.amount }}</span>
+          </template>
+        </el-table-column>
+      </el-table-column>
+
+      <el-table-column v-if="showRow3" label="Период 3">
+        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name">
+          <template slot-scope="{row}">
+            <span>{{ row.event_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.amount }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
 
     </el-table>
@@ -210,7 +254,7 @@
 
 <script>
 import ElDragSelect from '@/components/DragSelect'
-import { getData, getEvents, getIogvs, getSuggest, getSystems } from '@/api/remote-search2'
+import { getData, getEvents, getIogvs, getSuggest, getSystems, getTimer } from '@/api/remote-search2'
 import Pagination from '@/components/Pagination'
 import { parseTime } from '@/utils'
 
@@ -244,14 +288,15 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 1000,
         system_name: null,
         iogv_name: null,
         event_name: null,
         search: null,
         start_date: null,
         end_date: null,
-        sort: null
+        sort: null,
+        groupby_system: null
       },
       listQueryNoLimit: {},
       showId: true,
@@ -261,6 +306,12 @@ export default {
       showLogin: true,
       showDate: true,
       showEvent: true,
+      showRow1: false,
+      showRow2: false,
+      showRow3: false,
+      showGroupbySystem: false,
+
+      rowSpan: [1, 1, 1, 1, 1, 1, 1, 1, 1],
 
       pickerOptions: {
         shortcuts: [{
@@ -298,6 +349,29 @@ export default {
     this.getData()
   },
   methods: {
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (this.showGroupbySystem) {
+        if (rowIndex % this.rowSpan[columnIndex] === 0) {
+          return {
+            rowspan: this.rowSpan[columnIndex],
+            colspan: 1
+          }
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0
+          }
+        }
+      }
+    },
+    groupbySystem() {
+      this.showId = false
+      this.showFio = false
+      this.showLogin = false
+      this.showDate = false
+      this.showEvent = false
+      this.getData()
+    },
     saveFilter() {
       this.getData()
     },
@@ -324,16 +398,28 @@ export default {
       })
     },
     getData() {
-      // const loading = this.$loading({
-      //   lock: true,
-      //   text: '0 %'
-      // })
-      //
-      // let counter = 0;
-      // let timer = setInterval(() => {
-      //   loading.text = counter+" %";
-      //   if(counter < 100) counter++
-      // }, 10)
+      // анимация для сгруппированных запросов
+      if (this.showGroupbySystem) {
+        var loading = this.$loading({
+          lock: true,
+          text: '0 %'
+        })
+        getTimer(this.listQuery).then(response => {
+          let tick = parseInt(response.data.timer)
+          if (tick < 12) {
+            tick = 12
+          }
+          let counter = 0
+          const timer = setInterval(() => {
+            loading.text = counter + ' %'
+            if (counter < 100) {
+              counter++
+            } else {
+              clearInterval(timer)
+            }
+          }, tick)
+        })
+      }
 
       this.listLoading = true
       this.listQuery.system_name = this.choose_systems_value.toString()
@@ -341,12 +427,21 @@ export default {
       this.listQuery.event_name = this.choose_events_value.toString()
       this.listQuery.start_date = this.dates[0]
       this.listQuery.end_date = this.dates[1]
+      if (this.showGroupbySystem) {
+        this.listQuery.groupby_system = true
+      }
       getData(this.listQuery).then(response => {
         this.data_list = response.data.items
         this.total = parseInt(response.data.total.count)
         this.listLoading = false
-        // loading.close()
-        // clearInterval(timer)
+        if (this.showGroupbySystem) {
+          this.rowSpan[0] = response.data.rowspan[0] * response.data.rowspan[1]
+          this.rowSpan[1] = response.data.rowspan[1]
+          this.showRow1 = true
+          this.showRow2 = true
+          this.showRow3 = true
+          loading.close()
+        }
       })
     },
     clear_systems() {
@@ -533,5 +628,9 @@ export default {
   .btn_margin {
     width: 90%;
     float: left;
+  }
+
+  .nopad {
+    padding: 0 !important;
   }
 </style>

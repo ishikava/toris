@@ -40,3 +40,11 @@ export function getSuggest(query) {
   })
 }
 
+export function getTimer(query) {
+  return request({
+    url: '/get_timer',
+    method: 'get',
+    params: query
+  })
+}
+
