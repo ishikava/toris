@@ -95,27 +95,27 @@ export const constantRoutes = [
       }
     ]
   },
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'stats',
-  //       component: () => import('@/views/stats/index'),
-  //       name: 'Statistics',
-  //       meta: { title: 'Статистика', icon: 'nested', affix: true }
-  //     }
-  //   ]
-  // },
   {
     path: '/',
     component: Layout,
     children: [
       {
         path: 'stats',
-        component: () => import('@/views/new_stats/index'),
+        component: () => import('@/views/stats/index'),
         name: 'Statistics',
         meta: { title: 'Статистика', icon: 'nested', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: 'log',
+        component: () => import('@/views/log/index'),
+        name: 'Log',
+        meta: { title: 'Лог', icon: 'list', affix: true }
       }
     ]
   },
@@ -131,53 +131,19 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://play.grafana.org/d/000000012/grafana-play-home?orgId=1&from=now-24h&to=now&refresh=5s',
-        meta: { title: 'Grafana example', icon: 'link' }
-      }
-    ]
-  },
-  {
-    path: '/',
-    component: Layout,
-    children: [
-      {
-        path: 'settings',
-        component: () => import('@/views/settings/index'),
-        name: 'Settings',
-        meta: { title: 'Настройки', icon: 'el-icon-s-operation', affix: true }
-      }
-    ]
-  },
-  /*  {
-    path: '/documentation',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/guide/index'),
-        name: 'Guide',
-        meta: { title: 'Guide', icon: 'guide', noCache: true }
-      }
-    ]
-  },*/
+
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'settings',
+  //       component: () => import('@/views/settings/index'),
+  //       name: 'Settings',
+  //       meta: { title: 'Настройки', icon: 'el-icon-s-operation', affix: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/profile',
     component: Layout,
@@ -189,19 +155,6 @@ export const constantRoutes = [
         component: () => import('@/views/profile/index'),
         name: 'Profile',
         meta: { title: 'Профиль', icon: 'user', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: 'stats_group',
-        component: () => import('@/views/stats_group/index'),
-        name: 'Statistics',
-        meta: { title: 'Статистика', icon: 'nested', affix: true }
       }
     ]
   }

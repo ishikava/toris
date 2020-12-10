@@ -131,20 +131,10 @@
           <el-checkbox v-model="showEvent" class="filter-item">
             Действие
           </el-checkbox>
-          <br> <br>
-          <el-checkbox v-model="showGroupbySystem" class="filter-item" style="margin-left:15px;" @change="groupbySystem">
-            Сгруппировать по системам
-          </el-checkbox>
         </div>
       </div>
 
-      <div class="components-container-wrapper2">
-        <!--        <div class="components-container2">
-          <div class="btn_cont2">
-            <el-button class="filter-item  btn_margin" type="primary" @click="saveFilter">Сохранить текущие настройки</el-button>
-          </div>
-        </div>-->
-      </div>
+      <div class="components-container-wrapper2" />
 
     </div>
     <div class="clearfix" />
@@ -152,7 +142,6 @@
     <el-table
       v-loading="listLoading"
       :data="data_list"
-      :span-method="objectSpanMethod"
       border
       fit
       highlight-current-row
@@ -206,45 +195,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showRow1" label="Период 1">
-        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name">
-          <template slot-scope="{row}">
-            <span>{{ row.event_name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.amount }}</span>
-          </template>
-        </el-table-column>
-      </el-table-column>
-
-      <el-table-column v-if="showRow2" label="Период 2">
-        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name">
-          <template slot-scope="{row}">
-            <span>{{ row.event_name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.amount }}</span>
-          </template>
-        </el-table-column>
-      </el-table-column>
-
-      <el-table-column v-if="showRow3" label="Период 3">
-        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name">
-          <template slot-scope="{row}">
-            <span>{{ row.event_name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.amount }}</span>
-          </template>
-        </el-table-column>
-      </el-table-column>
-
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getData" />
@@ -254,12 +204,12 @@
 
 <script>
 import ElDragSelect from '@/components/DragSelect'
-import { getData, getEvents, getIogvs, getSuggest, getSystems, getTimer } from '@/api/remote-search2'
+import { getData, getEvents, getIogvs, getSuggest, getSystems } from '@/api/remote-search2'
 import Pagination from '@/components/Pagination'
 import { parseTime } from '@/utils'
 
 export default {
-  name: 'Stats',
+  name: 'Log',
   components: { ElDragSelect, Pagination },
 
   filters: {
@@ -273,7 +223,6 @@ export default {
   data() {
     return {
       downloadLoading: false,
-
       choose_systems: null,
       choose_iogvs: null,
       choose_events: null,
@@ -281,7 +230,6 @@ export default {
       choose_iogvs_value: [],
       choose_events_value: [],
       dates: [],
-
       total: 0,
       data_list: null,
       data_list_no_limit: null,
@@ -295,8 +243,7 @@ export default {
         search: null,
         start_date: null,
         end_date: null,
-        sort: null,
-        groupby_system: null
+        sort: null
       },
       listQueryNoLimit: {},
       showId: true,
@@ -306,12 +253,6 @@ export default {
       showLogin: true,
       showDate: true,
       showEvent: true,
-      showRow1: false,
-      showRow2: false,
-      showRow3: false,
-      showGroupbySystem: false,
-
-      rowSpan: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
       pickerOptions: {
         shortcuts: [{
@@ -349,32 +290,6 @@ export default {
     this.getData()
   },
   methods: {
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (this.showGroupbySystem) {
-        if (rowIndex % this.rowSpan[columnIndex] === 0) {
-          return {
-            rowspan: this.rowSpan[columnIndex],
-            colspan: 1
-          }
-        } else {
-          return {
-            rowspan: 0,
-            colspan: 0
-          }
-        }
-      }
-    },
-    groupbySystem() {
-      this.showId = false
-      this.showFio = false
-      this.showLogin = false
-      this.showDate = false
-      this.showEvent = false
-      this.getData()
-    },
-    saveFilter() {
-      this.getData()
-    },
     getSuggest(queryString, cb) {
       const q = {}
       q.search = queryString
@@ -398,50 +313,17 @@ export default {
       })
     },
     getData() {
-      // анимация для сгруппированных запросов
-      if (this.showGroupbySystem2) {
-        var loading = this.$loading({
-          lock: true,
-          text: '0 %'
-        })
-        getTimer(this.listQuery).then(response => {
-          let tick = parseInt(response.data.timer)
-          if (tick < 12) {
-            tick = 12
-          }
-          let counter = 0
-          const timer = setInterval(() => {
-            loading.text = counter + ' %'
-            if (counter < 100) {
-              counter++
-            } else {
-              clearInterval(timer)
-            }
-          }, tick)
-        })
-      }
-
       this.listLoading = true
       this.listQuery.system_name = this.choose_systems_value.toString()
       this.listQuery.iogv_name = this.choose_iogvs_value.toString()
       this.listQuery.event_name = this.choose_events_value.toString()
       this.listQuery.start_date = this.dates[0]
       this.listQuery.end_date = this.dates[1]
-      if (this.showGroupbySystem) {
-        this.listQuery.groupby_system = true
-      }
+
       getData(this.listQuery).then(response => {
         this.data_list = response.data.items
         this.total = parseInt(response.data.total.count)
         this.listLoading = false
-        if (this.showGroupbySystem) {
-          this.rowSpan[0] = response.data.rowspan[0] * response.data.rowspan[1]
-          this.rowSpan[1] = response.data.rowspan[1]
-          this.showRow1 = true
-          this.showRow2 = true
-          this.showRow3 = true
-          loading.close()
-        }
       })
     },
     clear_systems() {
@@ -472,6 +354,16 @@ export default {
       this.dates = []
       this.getData()
     },
+    sortChange(data) {
+      const { prop, order } = data
+      if (order === 'ascending') {
+        this.listQuery.sort = '+' + prop
+      } else {
+        this.listQuery.sort = '-' + prop
+      }
+      this.listQuery.page = 1
+      this.getData()
+    },
 
     // download .xlsx
     formatJson(filterVal) {
@@ -482,16 +374,6 @@ export default {
           return v[j]
         }
       }))
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (order === 'ascending') {
-        this.listQuery.sort = '+' + prop
-      } else {
-        this.listQuery.sort = '-' + prop
-      }
-      this.listQuery.page = 1
-      this.getData()
     },
     handleDownload() {
       this.downloadLoading = true
@@ -507,47 +389,32 @@ export default {
           const tHeader2 = []
 
           if (this.showId) {
+            tHeader2.push(tHeader[0])
             filterVal2.push(filterVal[0])
           }
           if (this.showSystem) {
+            tHeader2.push(tHeader[1])
             filterVal2.push(filterVal[1])
           }
           if (this.showIogv) {
+            tHeader2.push(tHeader[2])
             filterVal2.push(filterVal[2])
           }
           if (this.showFio) {
+            tHeader2.push(tHeader[3])
             filterVal2.push(filterVal[3])
           }
           if (this.showLogin) {
+            tHeader2.push(tHeader[4])
             filterVal2.push(filterVal[4])
           }
           if (this.showDate) {
+            tHeader2.push(tHeader[5])
             filterVal2.push(filterVal[5])
           }
           if (this.showEvent) {
-            filterVal2.push(filterVal[6])
-          }
-
-          if (this.showId) {
-            tHeader2.push(tHeader[0])
-          }
-          if (this.showSystem) {
-            tHeader2.push(tHeader[1])
-          }
-          if (this.showIogv) {
-            tHeader2.push(tHeader[2])
-          }
-          if (this.showFio) {
-            tHeader2.push(tHeader[3])
-          }
-          if (this.showLogin) {
-            tHeader2.push(tHeader[4])
-          }
-          if (this.showDate) {
-            tHeader2.push(tHeader[5])
-          }
-          if (this.showEvent) {
             tHeader2.push(tHeader[6])
+            filterVal2.push(filterVal[6])
           }
 
           const data = this.formatJson(filterVal2)
@@ -635,7 +502,4 @@ export default {
     float: left;
   }
 
-  .nopad {
-    padding: 0 !important;
-  }
 </style>

@@ -1,490 +1,574 @@
 <template>
   <div class="app-container">
 
-    <div class="components-container">
-      <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-drag-select>
+    <div class="stats-filter-container">
 
-      <div style="margin-top:30px;">
-        <el-tag v-for="item of value" :key="item" style="margin-right:15px;">
-          {{ item }}
-        </el-tag>
-      </div>
-    </div>
-
-    <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="Поиск по Логину и ФИО" style="width: 300px; float: left;" class="filter-item" @keyup.enter.native="handleFilter" />
-
-      <el-button v-waves class="filter-item" style="margin-left: 5px; margin-right: 30px; float: left;" type="primary" icon="el-icon-search" @click="handleFilter">
-        Поиск
-      </el-button>
-
-      <!--      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
-      <!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
-      <!--      </el-select>-->
-
-      <el-select v-model="listQuery.event" placeholder="Тип события" clearable class="filter-item" style="width: 200px; margin-left: 10px; margin-right: 30px; float: left">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-      <pre>{{ dates }}</pre>
-      <div class="block" style="float: left;">
-        <span class="demonstration">Дата </span>
-        <el-date-picker
-          v-model="value2"
-          type="datetimerange"
-          :picker-options="pickerOptions"
-          range-separator="По"
-          start-placeholder="Start date"
-          end-placeholder="End date"
-          align="right"
-        />
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <div class="block">
+            <el-date-picker
+              v-model="dates1"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetimerange"
+              :picker-options="pickerOptions1"
+              range-separator="|"
+              start-placeholder="Диапазон 1"
+              end-placeholder="Дата"
+              align="left"
+              @change="getData"
+            />
+          </div>
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_dates1" />
       </div>
 
-      <!--      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
-      <!--        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
-      <!--      </el-select>-->
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <div class="block">
+            <el-date-picker
+              v-model="dates2"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetimerange"
+              :picker-options="pickerOptions2"
+              range-separator="|"
+              start-placeholder="Диапазон 2"
+              end-placeholder="Дата"
+              align="left"
+              @change="getData"
+            />
+          </div>
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_dates2" />
+      </div>
 
-      <!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
-      <!--        Add-->
-      <!--      </el-button>-->
-      <el-button v-waves :loading="downloadLoading" class="filter-item" style="float: right;" type="primary" icon="el-icon-download" @click="handleDownload">
-        Скачать отчет .xlsx
-      </el-button>
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <div class="block">
+            <el-date-picker
+              v-model="dates3"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetimerange"
+              :picker-options="pickerOptions3"
+              range-separator="|"
+              start-placeholder="Диапазон 3"
+              end-placeholder="Дата"
+              align="left"
+              @change="getData"
+            />
+          </div>
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_dates3" />
+      </div>
+
     </div>
 
-    <div class="clearfix" />
+    <div class="stats-filter-container">
 
-    <div class="filter-container" style="margin-top: 7px;">
-      <el-button class="filter-item" type="primary">
-        Наксторить поля
-      </el-button>
-      <el-checkbox v-model="showSystem" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        Система
-      </el-checkbox>
-      <el-checkbox v-model="showIogv" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        ИОГВ
-      </el-checkbox>
-      <el-checkbox v-model="showFio" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        ФИО
-      </el-checkbox>
-      <el-checkbox v-model="showLogin" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        Логин
-      </el-checkbox>
-      <el-checkbox v-model="showDate" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        Дата
-      </el-checkbox>
-      <el-checkbox v-model="showEvent" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        Событие
-      </el-checkbox>
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <el-drag-select v-model="choose_systems_value" multiple filterable placeholder="Система" style="width: 100%;" @change="getData">
+            <el-option v-for="item in choose_systems" :key="item" :label="item" :value="item" />
+          </el-drag-select>
 
-      <a href="#/stats_group" class="link-type" style="float: right; margin-top: 10px;" icon="el-icon-upload">Сгруппировать отчет</a>
+          <div>
+            <el-tag v-for="item of choose_systems_value" :key="item" style="margin-top: 10px; margin-right: 5px;">
+              {{ item }}
+            </el-tag>
+          </div>
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_systems" />
+      </div>
+
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <el-drag-select v-model="choose_iogvs_value" multiple filterable placeholder="ИОГВ" style="width: 100%;" @change="getData">
+            <el-option v-for="item in choose_iogvs" :key="item" :label="item" :value="item" />
+          </el-drag-select>
+
+          <div>
+            <el-tag v-for="item of choose_iogvs_value" :key="item" style="margin-top: 10px; margin-right: 5px;">
+              {{ item }}
+            </el-tag>
+          </div>
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_iogvs" />
+      </div>
+
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <el-drag-select v-model="choose_events_value" multiple filterable placeholder="Действие" style="width: 100%;" @change="getData">
+            <el-option v-for="item in choose_events" :key="item" :label="item" :value="item" />
+          </el-drag-select>
+
+          <div>
+            <el-tag v-for="item of choose_events_value" :key="item" style="margin-top: 10px; margin-right: 5px;">
+              {{ item }}
+            </el-tag>
+          </div>
+        </div>
+        <div class="clear_x el-icon-close" @click="clear_events" />
+      </div>
+
+    </div>
+
+    <div class="stats-filter-container">
+
+      <div class="components-container-wrapper">
+        <div class="components-container">
+          <div class="btn_cont">
+            <el-button class="filter-item btn_margin" type="default" icon="el-icon-close" @click="clear_all">Очистить</el-button>
+          </div>
+
+          <div class="btn_cont">
+            <el-button class="filter-item btn_margin" type="primary" @click="getData">Отправить</el-button>
+          </div>
+
+          <div class="btn_cont">
+            <el-button class="filter-item btn_margin" type="primary" icon="el-icon-download" :loading="downloadLoading" @click="handleDownload">Скачать .xlsx</el-button>
+          </div>
+        </div>
+      </div>
 
     </div>
 
     <el-table
-      :key="tableKey"
       v-loading="listLoading"
-      :data="list"
+      :data="data_list"
       border
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
+      :span-method="objectSpanMethod"
     >
 
-      <el-table-column v-if="showSystem" label="Система" min-width="180">
+      <el-table-column label="Система" show-overflow-tooltip min-width="180" prop="system_name">
         <template slot-scope="{row}">
-          <span>{{ row.system | substrFilter }}</span>
+          <span>{{ row.system_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showIogv" label="ИОГВ" min-width="180">
+      <el-table-column label="ИОГВ" show-overflow-tooltip min-width="180" prop="iogv_name">
         <template slot-scope="{row}">
-          <span>{{ row.iogv | substrFilter }}</span>
+          <span>{{ row.iogv_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showFio" label="ФИО пользователя" min-width="180">
-        <template slot-scope="{row}">
-          <span>{{ row.fio | substrFilter }}</span>
-        </template>
+      <el-table-column label="За все время">
+        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <span>{{ row.event_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.amount }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
 
-      <el-table-column v-if="showLogin" label="Логин" align="center" min-width="120">
-        <template slot-scope="{row}">
-          <span>{{ row.login }}</span>
-        </template>
+      <el-table-column label="Период 1">
+        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name1" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <span>{{ row.event_name1 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column class-name="nopad" min-width="30" prop="amount1" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.amount1 }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
 
-      <el-table-column v-if="showDate" label="Дата" align="center" min-width="120">
-        <template slot-scope="{row}">
-          <!--          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-          <span>{{ row.date }}</span>
-        </template>
+      <el-table-column label="Период 2">
+        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name2" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <span>{{ row.event_name2 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column class-name="nopad" min-width="30" prop="amount2" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.amount2 }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
 
-      <el-table-column v-if="showEvent" label="Действие" align="center" min-width="180">
-        <template slot-scope="{row}">
-          <span>{{ row.event | substrFilter }}</span>
-        </template>
+      <el-table-column label="Период 3">
+        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name3" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <span>{{ row.event_name3 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column class-name="nopad" min-width="30" prop="amount3" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.amount3 }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
-
-      <!--
-            <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-              <template slot-scope="{row}">
-                <span>{{ row.id }}</span>
-              </template>
-            </el-table-column>
-      -->
-
-      <!--      <el-table-column label="Author" width="110px" align="center">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          <span>{{ row.author }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-      <!--      -->
-
-      <!--      <el-table-column label="Status" class-name="status-col" width="100">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          <el-tag :type="row.status | statusFilter">-->
-      <!--            {{ row.status }}-->
-      <!--          </el-tag>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-      <!--      <el-table-column label="Действия" align="center" width="230" class-name="small-padding fixed-width">
-
-              <template slot-scope="{row,$index}">
-                <el-button type="primary" size="mini" @click="handleUpdate(row)">
-                  Ред.
-                </el-button>
-                <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-                  Обраб.
-                </el-button>
-                <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-                  Не обр.
-                </el-button>
-                <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-                  Удал.
-                </el-button>
-              </template>
-            </el-table-column>-->
 
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <br><br><br>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Тип события" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Дата" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <!--        <el-form-item label="Title" prop="title">-->
-        <!--          <el-input v-model="temp.title" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="Status">-->
-        <!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
-        <!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
-        <!--          </el-select>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="Imp">-->
-        <!--          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="Remark">-->
-        <!--          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
-        <!--        </el-form-item>-->
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Отменить
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Подтвердить
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Информация о пользователе">
-      <el-table border fit highlight-current-row style="width: 100%">
-        <el-table-column label="Имя" />
-        <el-table-column label="Фамилия" />
-        <el-table-column label="Отчество" />
-      </el-table>
-      <el-table border fit highlight-current-row style="width: 100%">
-        <el-table-column label="Организация" />
-        <el-table-column label="Должность" />
-        <el-table-column label="Логин" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Подтвердить</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { createArticle, fetchPv, updateArticle } from '@/api/article'
-import { statsList } from '@/api/remote-search'
-import waves from '@/directive/waves' // waves directive
+import ElDragSelect from '@/components/DragSelect'
+import { getEvents, getGroupedData, getIogvs, getSystems } from '@/api/remote-search2'
 import { parseTime } from '@/utils'
-// import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import ElDragSelect from '@/components/DragSelect' // base on element-ui
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'Аутентификация пользователя' },
-  { key: 'CN', display_name: 'Вход в систему (визит)' },
-  { key: 'CN', display_name: 'Обращение к справочнику' },
-  { key: 'CN', display_name: 'Просмотр объекта' },
-  { key: 'CN', display_name: 'Изменение объекта' },
-  { key: 'CN', display_name: 'Формирование печатной формы' },
-  { key: 'CN', display_name: 'Формирование отчета' },
-  { key: 'CN', display_name: 'Создание объекта' },
-  { key: 'CN', display_name: 'Экспорт данных' },
-  { key: 'CN', display_name: 'Импорт данных' },
-  { key: 'CN', display_name: 'Удаление объекта' },
-  { key: 'CN', display_name: 'Вызов внешнего сервиса' },
-  { key: 'CN', display_name: 'Продление сессии пользователя' },
-  { key: 'CN', display_name: 'Завершение сессии пользователя' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
-// TodayDate = new Date();
 
 export default {
-  name: 'ComplexTable',
-  // components: { Pagination },
+  name: 'Stats',
   components: { ElDragSelect },
-  directives: { waves },
+
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    },
-    substrFilter(system) {
-      return system.substr(0, 30)
+    infoFilter(str) {
+      const result = Object.keys(str).map((key) => [key, str[key]])
+      const arr = result.join('   |   ')
+      return arr.replace(new RegExp(',', 'g'), ' : ')
     }
   },
+
   data() {
     return {
-      tableKey: 0,
-      list: null,
-      total: 0,
+      downloadLoading: false,
+      choose_systems: null,
+      choose_iogvs: null,
+      choose_events: null,
+      choose_systems_value: [],
+      choose_iogvs_value: [],
+      choose_events_value: [],
+      dates1: [],
+      dates2: [],
+      dates3: [],
+      data_list: null,
       listLoading: true,
       listQuery: {
-        page: 1,
-        limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
+        system_name: null,
+        iogv_name: null,
+        event_name: null,
+        dates1: null,
+        dates2: null,
+        dates3: null
       },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['Обработан', 'Не обраб.', 'Удалено'],
-      showSystem: true,
-      showIogv: true,
-      showFio: true,
-      showLogin: true,
-      showDate: true,
-      showEvent: true,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Редактировать',
-        create: 'Создать'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
-      downloadLoading: false,
+      rowSpan: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
-      value: ['Apple', 'Banana', 'Orange'],
-      options: [{
-        value: 'Apple',
-        label: 'Apple'
-      }, {
-        value: 'Banana',
-        label: 'Banana'
-      }, {
-        value: 'Orange',
-        label: 'Orange'
-      }, {
-        value: 'Pear',
-        label: 'Pear'
-      }, {
-        value: 'Strawberry',
-        label: 'Strawberry'
-      }]
+      pickerOptions1: {
+        shortcuts: [
+          {
+            text: 'За 24 часа',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За 7 дней',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 1 месяц',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 3 месяца',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 91)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За полгода',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 182)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Текущий год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date(new Date().getFullYear(), 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Предыдущий',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear(), 0, 1)
+              const start = new Date(new Date().getFullYear() - 1, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Позапрошлый',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear() - 1, 0, 1)
+              const start = new Date(new Date().getFullYear() - 2, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }]
+      },
+      pickerOptions2: {
+        shortcuts: [
+          {
+            text: 'За 24 часа',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За 7 дней',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 1 месяц',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 3 месяца',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 91)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За полгода',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 182)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Текущий год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date(new Date().getFullYear(), 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Предыдущий',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear(), 0, 1)
+              const start = new Date(new Date().getFullYear() - 1, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Позапрошлый',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear() - 1, 0, 1)
+              const start = new Date(new Date().getFullYear() - 2, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }]
+      },
+      pickerOptions3: {
+        shortcuts: [
+          {
+            text: 'За 24 часа',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За 7 дней',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 1 месяц',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 3 месяца',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 91)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За полгода',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 182)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Текущий год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date(new Date().getFullYear(), 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Предыдущий',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear(), 0, 1)
+              const start = new Date(new Date().getFullYear() - 1, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Позапрошлый',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear() - 1, 0, 1)
+              const start = new Date(new Date().getFullYear() - 2, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }]
+      }
     }
   },
   created() {
-    this.getList()
+    this.getSystems()
+    this.getIogvs()
+    this.getEvents()
+    this.getData()
   },
   methods: {
-    getList() {
-      this.listLoading = true
-      statsList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
-      })
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: 'Успешно',
-        type: 'success'
-      })
-      row.status = status
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (rowIndex % this.rowSpan[columnIndex] === 0) {
+        return {
+          rowspan: this.rowSpan[columnIndex],
+          colspan: 1
+        }
       } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
-    },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+        return {
+          rowspan: 0,
+          colspan: 0
+        }
       }
     },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+    getSystems() {
+      getSystems().then(response => {
+        this.choose_systems = response.data
       })
     },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
+    getIogvs() {
+      getIogvs().then(response => {
+        this.choose_iogvs = response.data
       })
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+    getEvents() {
+      getEvents().then(response => {
+        this.choose_events = response.data
       })
     },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Успешно',
-              message: 'Успешно обновлено',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
+    getData() {
+      this.listLoading = true
+      this.listQuery.system_name = this.choose_systems_value.toString()
+      this.listQuery.iogv_name = this.choose_iogvs_value.toString()
+      this.listQuery.event_name = this.choose_events_value.toString()
+      this.listQuery.dates1 = this.dates1
+      this.listQuery.dates2 = this.dates2
+      this.listQuery.dates3 = this.dates3
+
+      getGroupedData(this.listQuery).then(response => {
+        this.data_list = response.data.items
+        this.listLoading = false
+        response.data.event_count = 14
+        this.rowSpan[0] = (response.data.iogv_count * response.data.event_count) / response.data.system_count
+        this.rowSpan[1] = response.data.event_count
       })
     },
-    handleDelete(row, index) {
-      this.$notify({
-        title: 'Успешно',
-        message: 'Успешно удалено',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
+    clear_systems() {
+      this.choose_systems_value = []
+      this.getData()
     },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
+    clear_iogvs() {
+      this.choose_iogvs_value = []
+      this.getData()
     },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
+    clear_events() {
+      this.choose_events_value = []
+      this.getData()
     },
+    clear_dates1() {
+      this.dates1 = []
+      this.getData()
+    },
+    clear_dates2() {
+      this.dates2 = []
+      this.getData()
+    },
+    clear_dates3() {
+      this.dates3 = []
+      this.getData()
+    },
+    clear_all() {
+      this.choose_systems_value = []
+      this.choose_iogvs_value = []
+      this.choose_events_value = []
+      this.dates1 = []
+      this.dates2 = []
+      this.dates3 = []
+      this.getData()
+    },
+
+    // download .xlsx
     formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
+      return this.data_list_no_limit.map(v => filterVal.map(j => {
         if (j === 'timestamp') {
           return parseTime(v[j])
         } else {
@@ -492,41 +576,131 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    },
+    handleDownload() {
+      this.downloadLoading = true
 
-    pickerOptions: {
-      shortcuts: [{
-        text: 'Last week',
-        onClick(picker) {
-          const end = new Date()
-          const start = new Date()
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-          picker.$emit('pick', [start, end])
-        }
-      }, {
-        text: 'Last month',
-        onClick(picker) {
-          const end = new Date()
-          const start = new Date()
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-          picker.$emit('pick', [start, end])
-        }
-      }, {
-        text: 'Last 3 months',
-        onClick(picker) {
-          const end = new Date()
-          const start = new Date()
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-          picker.$emit('pick', [start, end])
-        }
-      }]
-    },
-    // value1: [new Date(2000, 10, 10, 10, 10), new Date(TodayDate.getUTCFullYear(), TodayDate.getUTCMonth(), TodayDate.getUTCDay(), TodayDate.getUTCHours(), TodayDate.getUTCMinutes())]
-    value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
-    value2: ''
+      getGroupedData({ ...this.listQuery, limit: 1000, page: 1 }).then(response => {
+        this.data_list_no_limit = response.data.items
+
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['id', 'Название Системы', 'ИОГВ', 'Ф.И.О.', 'login', 'Дата', 'Действие']
+          const filterVal = ['id', 'system_name', 'iogv_name', 'fullname', 'login', 'date', 'event_name']
+
+          const filterVal2 = []
+          const tHeader2 = []
+
+          if (this.showId) {
+            tHeader2.push(tHeader[0])
+            filterVal2.push(filterVal[0])
+          }
+          if (this.showSystem) {
+            tHeader2.push(tHeader[1])
+            filterVal2.push(filterVal[1])
+          }
+          if (this.showIogv) {
+            tHeader2.push(tHeader[2])
+            filterVal2.push(filterVal[2])
+          }
+          if (this.showFio) {
+            tHeader2.push(tHeader[3])
+            filterVal2.push(filterVal[3])
+          }
+          if (this.showLogin) {
+            tHeader2.push(tHeader[4])
+            filterVal2.push(filterVal[4])
+          }
+          if (this.showDate) {
+            tHeader2.push(tHeader[5])
+            filterVal2.push(filterVal[5])
+          }
+          if (this.showEvent) {
+            tHeader2.push(tHeader[6])
+            filterVal2.push(filterVal[6])
+          }
+
+          const data = this.formatJson(filterVal2)
+          excel.export_json_to_excel({
+            header: tHeader2,
+            data,
+            filename: 'Отчет'
+          })
+          this.downloadLoading = false
+        })
+      })
+    }
   }
 }
 </script>
+
+<style>
+  .info {
+    padding: 7px 10px;
+    float: left;
+  }
+
+  .el-table th {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .components-container-wrapper {
+    float: left;
+    width: 100%;
+    text-align: center;
+    position: relative;
+  }
+
+  .stats-filter-container {
+    float: left;
+    width: 33.3%;
+    position: relative;
+  }
+
+  .components-container {
+    width: 90%;
+    float: left;
+    margin-top: 0px;
+    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .clear_x {
+    position: absolute;
+    right: 22px;
+    top: 8px;
+    color: #ccc;
+    border: 1px solid #ccc;
+    padding: 2px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner {
+    width: 100%;
+  }
+
+  .btn_cont {
+    float: left;
+    width: 33.3%;
+  }
+
+  .btn_cont2 {
+    float: right;
+    width: 33.3%;
+    margin-bottom: 15px;
+  }
+
+  .btn_margin {
+    width: 90%;
+    float: left;
+  }
+
+  .nopad {
+    padding: 0 !important;
+  }
+
+</style>

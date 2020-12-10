@@ -32,6 +32,14 @@ export function getData(query) {
   })
 }
 
+export function getGroupedData(query) {
+  return request({
+    url: '/get_grouped_data',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getSuggest(query) {
   return request({
     url: '/get_suggest',
