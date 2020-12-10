@@ -139,11 +139,11 @@
       </div>
 
       <div class="components-container-wrapper2">
-        <div class="components-container2">
+        <!--        <div class="components-container2">
           <div class="btn_cont2">
             <el-button class="filter-item  btn_margin" type="primary" @click="saveFilter">Сохранить текущие настройки</el-button>
           </div>
-        </div>
+        </div>-->
       </div>
 
     </div>
@@ -288,7 +288,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 1000,
+        limit: 20,
         system_name: null,
         iogv_name: null,
         event_name: null,
@@ -311,7 +311,7 @@ export default {
       showRow3: false,
       showGroupbySystem: false,
 
-      rowSpan: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      rowSpan: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
       pickerOptions: {
         shortcuts: [{
@@ -399,7 +399,7 @@ export default {
     },
     getData() {
       // анимация для сгруппированных запросов
-      if (this.showGroupbySystem) {
+      if (this.showGroupbySystem2) {
         var loading = this.$loading({
           lock: true,
           text: '0 %'
@@ -446,18 +446,23 @@ export default {
     },
     clear_systems() {
       this.choose_systems_value = []
+      this.getData()
     },
     clear_iogvs() {
       this.choose_iogvs_value = []
+      this.getData()
     },
     clear_events() {
       this.choose_events_value = []
+      this.getData()
     },
     clear_search() {
       this.listQuery.search = null
+      this.getData()
     },
     clear_dates() {
       this.dates = []
+      this.getData()
     },
     clear_all() {
       this.choose_systems_value = []
