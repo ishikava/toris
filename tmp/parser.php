@@ -17,7 +17,7 @@ $names = ['Исаков Ибрагил Тимурович', 'Потапов Ле
 $events = ['Аутентификация пользователя', 'Вход в систему (визит)', 'Обращение к справочнику', 'Просмотр объекта', 'Изменение объекта', 'Формирование печатной формы', 'Формирование отчета', 'Создание объекта', 'Экспорт данных', 'Импорт данных', 'Удаление объекта', 'Вызов внешнего сервиса', 'Продление сессии пользователя', 'Завершение сессии пользователя'];
 
 
-for ($j = 0; $j < 10000000; $j++) {
+for ($j = 0; $j < 100000; $j++) {
 
   //start transaction
   pg_query($postgres, "BEGIN");
@@ -68,7 +68,7 @@ for ($j = 0; $j < 10000000; $j++) {
   }
 
 
-  $res = pg_query($postgres, "INSERT INTO public.events_data(date, system_id, event_id, user_id, iogv_id, info_id)	VALUES (".time().", $system_id, $event_id, $user_id, $iogv_id, NULL)");
+  $res = pg_query($postgres, "INSERT INTO public.events_data(date, system_id, event_id, user_id, iogv_id, info_id)	VALUES (".(time()-rand(0,3600*24*365*3)).", $system_id, $event_id, $user_id, $iogv_id, NULL)");
 
   //end transaction
   pg_query($postgres, "COMMIT");
