@@ -79,7 +79,8 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Главная',
-        meta: { title: 'Главная', icon: 'chart', affix: true }
+        meta: { title: 'Главная', icon: 'chart', affix: true },
+        hidden: true
       }
     ]
   },
@@ -91,7 +92,7 @@ export const constantRoutes = [
         path: 'audit',
         component: () => import('@/views/audit/drag-select'),
         name: 'Audit',
-        meta: { title: 'Аудит', icon: 'form', affix: true }
+        meta: { title: 'Аудит', icon: 'tree-table', affix: true }
       }
     ]
   },
@@ -115,7 +116,7 @@ export const constantRoutes = [
         path: 'log',
         component: () => import('@/views/log/index'),
         name: 'Log',
-        meta: { title: 'Лог', icon: 'list', affix: true }
+        meta: { title: 'Логирование', icon: 'list', affix: true }
       }
     ]
   },

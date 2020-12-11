@@ -12,7 +12,7 @@
               type="datetimerange"
               :picker-options="pickerOptions1"
               range-separator="|"
-              start-placeholder="Период 1"
+              start-placeholder="Период №1"
               end-placeholder="Дата"
               align="left"
               @change="getData"
@@ -31,7 +31,7 @@
               type="datetimerange"
               :picker-options="pickerOptions2"
               range-separator="|"
-              start-placeholder="Период 2"
+              start-placeholder="Период №2"
               end-placeholder="Дата"
               align="left"
               @change="getData"
@@ -50,7 +50,7 @@
               type="datetimerange"
               :picker-options="pickerOptions3"
               range-separator="|"
-              start-placeholder="Период 3"
+              start-placeholder="Период №3"
               end-placeholder="Дата"
               align="left"
               @change="getData"
@@ -153,56 +153,48 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="За все время">
-        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name" show-overflow-tooltip>
-          <template slot-scope="{row}">
-            <span>{{ row.event_name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.amount }}</span>
-          </template>
-        </el-table-column>
+      <el-table-column label="За все время" class-name="nopad" min-width="180" prop="event_name" show-overflow-tooltip>
+        <template slot-scope="{row}">
+          <span>{{ row.event_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="nopad" min-width="30" prop="amount" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.amount }}</span>
+        </template>
       </el-table-column>
 
-      <el-table-column label="Период 1">
-        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name1" show-overflow-tooltip>
-          <template slot-scope="{row}">
-            <span>{{ row.event_name1 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="nopad" min-width="30" prop="amount1" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.amount1 }}</span>
-          </template>
-        </el-table-column>
+      <el-table-column label="Период №1" class-name="nopad" min-width="180" prop="event_name1" show-overflow-tooltip>
+        <template slot-scope="{row}">
+          <span>{{ row.event_name1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="nopad" min-width="30" prop="amount1" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.amount1 }}</span>
+        </template>
       </el-table-column>
 
-      <el-table-column label="Период 2">
-        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name2" show-overflow-tooltip>
-          <template slot-scope="{row}">
-            <span>{{ row.event_name2 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="nopad" min-width="30" prop="amount2" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.amount2 }}</span>
-          </template>
-        </el-table-column>
+      <el-table-column label="Период №2" class-name="nopad" min-width="180" prop="event_name2" show-overflow-tooltip>
+        <template slot-scope="{row}">
+          <span>{{ row.event_name2 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="nopad" min-width="30" prop="amount2" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.amount2 }}</span>
+        </template>
       </el-table-column>
 
-      <el-table-column label="Период 3">
-        <el-table-column label="Действие" class-name="nopad" min-width="180" prop="event_name3" show-overflow-tooltip>
-          <template slot-scope="{row}">
-            <span>{{ row.event_name3 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="nopad" min-width="30" prop="amount3" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.amount3 }}</span>
-          </template>
-        </el-table-column>
+      <el-table-column label="Период №3" class-name="nopad" min-width="180" prop="event_name3" show-overflow-tooltip>
+        <template slot-scope="{row}">
+          <span>{{ row.event_name3 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="nopad" min-width="30" prop="amount3" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.amount3 }}</span>
+        </template>
       </el-table-column>
 
     </el-table>
@@ -242,7 +234,7 @@ export default {
       dates2: [],
       dates3: [],
       data_list: null,
-      listLoading: true,
+      listLoading: false,
       listQuery: {
         system_name: null,
         iogv_name: null,
@@ -484,7 +476,7 @@ export default {
     this.getSystems()
     this.getIogvs()
     this.getEvents()
-    this.getData()
+    // this.getData()
   },
   methods: {
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -584,7 +576,8 @@ export default {
       this.dates1 = []
       this.dates2 = []
       this.dates3 = []
-      this.getData()
+      // this.getData()
+      this.data_list = null
     },
 
     // download .xlsx

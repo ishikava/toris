@@ -12,10 +12,7 @@
         </el-col>
 
         <el-col :xs="24" :sm="24" :lg="12">
-          <div class="chart-wrapper">
-            <div class="text-center" style="padding-bottom: 7px;">Количество активных пользователей</div>
-            <transaction-table />
-          </div>
+          <transaction-table />
         </el-col>
 
         <el-col :xs="24" :sm="24" :lg="12">
@@ -32,10 +29,7 @@
       </el-col>
 
       <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <div class="text-center" style="padding-bottom: 7px;">Лента событий</div>
-          <transaction-table2 />
-        </div>
+        <transaction-table2 />
       </el-col>
 
     </el-row>
@@ -44,16 +38,8 @@
 </template>
 
 <script>
-import GithubCorner from '@/components/GithubCorner'
-import PanelGroup from './components/PanelGroup'
-import LineChart from './components/LineChart'
-import RaddarChart from './components/RaddarChart'
-import PieChart from './components/PieChart'
-import BarChart from './components/BarChart'
 import TransactionTable from './components/TransactionTable'
 import TransactionTable2 from './components/TransactionTable2'
-import TodoList from './components/TodoList'
-import BoxCard from './components/BoxCard'
 import EventTypeRelation from './components/EventTypeRelation'
 import EventTypeByUser from './components/EventTypeByUser'
 import EventCountByUser from './components/EventCountByUser'
@@ -80,16 +66,8 @@ const lineChartData = {
 export default {
   name: 'DashboardAdmin',
   components: {
-    GithubCorner,
-    PanelGroup,
-    LineChart,
-    RaddarChart,
-    PieChart,
-    BarChart,
     TransactionTable,
     TransactionTable2,
-    TodoList,
-    BoxCard,
     EventTypeRelation,
     EventTypeByUser,
     EventCountByUser
@@ -110,7 +88,6 @@ export default {
 <style lang="scss" scoped>
 .dashboard-editor-container {
   padding: 32px;
-  background-color: rgb(240, 242, 245);
   position: relative;
 
   .github-corner {
@@ -125,6 +102,7 @@ export default {
     padding: 16px 16px 0;
     margin-bottom: 32px;
   }
+
 }
 
 @media (max-width: 1024px) {

@@ -56,3 +56,19 @@ export function getTimer(query) {
   })
 }
 
+export function eventList(query) {
+  return request({
+    url: '/get_event_list',
+    method: 'get',
+    params: query
+  })
+}
+
+export function activeUsers(query) {
+  return request({
+    url: '/get_active_users',
+    method: 'get',
+    params: query
+  })
+}
+

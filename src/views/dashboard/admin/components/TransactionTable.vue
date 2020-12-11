@@ -1,41 +1,36 @@
 <template>
-  <el-table :data="list" style="width: 100%; height: 316px; overflow: auto;">
-    <el-table-column label="Имя" min-width="180">
-      <template slot-scope="scope">
-        {{ scope.row.user | orderNoFilter }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Роль" width="140" align="center">
-      <template slot-scope="scope">
-        {{ scope.row.role }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Статус" width="100" align="center">
-      <template slot-scope="{row}">
-        <el-tag :type="row.status | statusFilter">
-          {{ row.status }}
-        </el-tag>
-      </template>
+  <el-table
+    :data="list"
+    border
+    fit
+    highlight-current-row
+    style="width: 100%;"
+    height="400"
+  >
+    <el-table-column label="Количество активных пользователей" align="center">
+      <el-table-column show-overflow-tooltip label="Пользователь">
+        <template slot-scope="{row}">
+          {{ row.fullname }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Логин" show-overflow-tooltip width="120" align="center">
+        <template slot-scope="{row}">
+          {{ row.login }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Статус" width="80" align="center">
+        <template slot-scope="{row}">
+          <span class="status">{{ row.status | statusFilter }}</span>
+        </template>
+      </el-table-column>
     </el-table-column>
   </el-table>
 </template>
 
 <script>
-import { activeUsers } from '@/api/remote-search'
+import { activeUsers } from '@/api/remote-search2'
 
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        success: 'success',
-        pending: 'danger'
-      }
-      return statusMap[status]
-    },
-    orderNoFilter(str) {
-      return str.substring(0, 30)
-    }
-  },
   data() {
     return {
       list: null
@@ -47,9 +42,21 @@ export default {
   methods: {
     fetchData() {
       activeUsers().then(response => {
-        this.list = response.data.items.slice(0, 20)
+        this.list = response.data.items
       })
     }
   }
 }
 </script>
+
+<style>
+  .status {
+    color: #1890ff;
+  }
+  .el-table__body td{
+    padding: 5px 0;
+  }
+  .el-table__header th{
+    padding: 5px 0;
+  }
+</style>

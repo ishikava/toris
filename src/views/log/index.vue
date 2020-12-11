@@ -233,7 +233,7 @@ export default {
       total: 0,
       data_list: null,
       data_list_no_limit: null,
-      listLoading: true,
+      listLoading: false,
       listQuery: {
         page: 1,
         limit: 20,
@@ -255,31 +255,79 @@ export default {
       showEvent: true,
 
       pickerOptions: {
-        shortcuts: [{
-          text: 'За 7 дней',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: 'За 1 месяц',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: 'За 3 месяца',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
+        shortcuts: [
+          {
+            text: 'За 24 часа',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За 7 дней',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 1 месяц',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За 3 месяца',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 91)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'За полгода',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 182)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'За год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Текущий год',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date(new Date().getFullYear(), 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Предыдущий',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear(), 0, 1)
+              const start = new Date(new Date().getFullYear() - 1, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: 'Позапрошлый',
+            onClick(picker) {
+              const end = new Date(new Date().getFullYear() - 1, 0, 1)
+              const start = new Date(new Date().getFullYear() - 2, 0, 1)
+              picker.$emit('pick', [start, end])
+            }
+          }]
       }
     }
   },
@@ -287,7 +335,7 @@ export default {
     this.getSystems()
     this.getIogvs()
     this.getEvents()
-    this.getData()
+    // this.getData()
   },
   methods: {
     getSuggest(queryString, cb) {
@@ -352,7 +400,8 @@ export default {
       this.choose_events_value = []
       this.listQuery.search = null
       this.dates = []
-      this.getData()
+      // this.getData()
+      this.data_list = null
     },
     sortChange(data) {
       const { prop, order } = data
