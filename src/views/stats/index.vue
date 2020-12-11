@@ -3,7 +3,7 @@
 
     <div class="stats-filter-container">
 
-      <div class="components-container-wrapper">
+      <div class="stats-components-container-wrapper">
         <div class="components-container">
           <div class="block">
             <el-date-picker
@@ -22,7 +22,7 @@
         <div class="clear_x el-icon-close" @click="clear_dates1" />
       </div>
 
-      <div class="components-container-wrapper">
+      <div class="stats-components-container-wrapper">
         <div class="components-container">
           <div class="block">
             <el-date-picker
@@ -41,7 +41,7 @@
         <div class="clear_x el-icon-close" @click="clear_dates2" />
       </div>
 
-      <div class="components-container-wrapper">
+      <div class="stats-components-container-wrapper">
         <div class="components-container">
           <div class="block">
             <el-date-picker
@@ -64,7 +64,7 @@
 
     <div class="stats-filter-container">
 
-      <div class="components-container-wrapper">
+      <div class="stats-components-container-wrapper">
         <div class="components-container">
           <el-drag-select v-model="choose_systems_value" multiple filterable placeholder="Система" style="width: 100%;" @change="getData">
             <el-option v-for="item in choose_systems" :key="item" :label="item" :value="item" />
@@ -79,7 +79,7 @@
         <div class="clear_x el-icon-close" @click="clear_systems" />
       </div>
 
-      <div class="components-container-wrapper">
+      <div class="stats-components-container-wrapper">
         <div class="components-container">
           <el-drag-select v-model="choose_iogvs_value" multiple filterable placeholder="ИОГВ" style="width: 100%;" @change="getData">
             <el-option v-for="item in choose_iogvs" :key="item" :label="item" :value="item" />
@@ -94,7 +94,7 @@
         <div class="clear_x el-icon-close" @click="clear_iogvs" />
       </div>
 
-      <div class="components-container-wrapper">
+      <div class="stats-components-container-wrapper">
         <div class="components-container">
           <el-drag-select v-model="choose_events_value" multiple filterable placeholder="Действие" style="width: 100%;" @change="getData">
             <el-option v-for="item in choose_events" :key="item" :label="item" :value="item" />
@@ -113,7 +113,7 @@
 
     <div class="stats-filter-container">
 
-      <div class="components-container-wrapper">
+      <div class="stats-components-container-wrapper">
         <div class="components-container">
           <div class="btn_cont">
             <el-button class="filter-item btn_margin" type="default" icon="el-icon-close" @click="clear_all">Очистить</el-button>
@@ -643,7 +643,7 @@ export default {
     font-weight: bold;
   }
 
-  .components-container-wrapper {
+  .stats-components-container-wrapper {
     float: left;
     width: 100%;
     text-align: center;
