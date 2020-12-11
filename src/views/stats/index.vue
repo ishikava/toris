@@ -214,7 +214,7 @@
 
 <script>
 import ElDragSelect from '@/components/DragSelect'
-import { getEvents, getGroupedData, getIogvs, getSystems } from '@/api/remote-search2'
+import { getEvents, getGroupedData, getIogvs, getSystems, getTimer } from '@/api/remote-search2'
 import { parseTime } from '@/utils'
 
 export default {
@@ -524,12 +524,33 @@ export default {
       this.listQuery.dates2 = this.dates2
       this.listQuery.dates3 = this.dates3
 
+      this.loading = this.$loading({
+        lock: true,
+        text: '0 %'
+      })
+      getTimer(this.listQuery).then(response => {
+        let tick = parseInt(response.data.timer)
+        if (tick < 12) {
+          tick = 12
+        }
+        let counter = 0
+        const timer = setInterval(() => {
+          this.loading.text = counter + ' %'
+          if (counter < 100) {
+            counter++
+          } else {
+            clearInterval(timer)
+          }
+        }, tick)
+      })
+
       getGroupedData(this.listQuery).then(response => {
         this.data_list = response.data.items
         this.listLoading = false
         response.data.event_count = 14
         this.rowSpan[0] = (response.data.iogv_count * response.data.event_count) / response.data.system_count
         this.rowSpan[1] = response.data.event_count
+        this.loading.close()
       })
     },
     clear_systems() {

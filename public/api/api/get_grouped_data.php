@@ -112,5 +112,5 @@ $result['system_count'] = $system_count;
 $result['iogv_count'] = $iogv_count;
 
 //запишем в базу время работы тяжелого запроса
-//$end = microtime(true);
-//$res = pg_query($postgres, "INSERT INTO public.timer(timer_query, timer_time)	VALUES ('" . serialize($_GET) . "', " . ($end - $start) . ");");
+$end = microtime(true);
+$res = pg_query($postgres, "INSERT INTO public.timer(timer_query, timer_time)	VALUES ('" . serialize($_GET['system_name'].$_GET['iogv_name']) . "', " . ($end - $start) . ");");
