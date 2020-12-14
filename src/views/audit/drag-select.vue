@@ -1,6 +1,7 @@
 <template>
   <div class="components-container">
 
+    <!--
     <div style="margin-bottom: 20px;">Аудит действий пользователей ( данные не подключены )</div>
 
     <el-row :gutter="32">
@@ -25,6 +26,7 @@
 
     </el-row>
 
+-->
 
     <el-row :gutter="32">
       <graph />
@@ -34,18 +36,18 @@
 </template>
 
 <script>
-import ElDragSelect from '@/components/DragSelect' // base on element-ui
+// import ElDragSelect from '@/components/DragSelect' // base on element-ui
 import Graph from './components/Grraph'
 
 export default {
   name: 'DragSelect',
-  components: {ElDragSelect, Graph},
+  components: { Graph },
   data() {
     return {
       listQuery: {
-        system: undefined,
+        system: undefined
       },
-      systemOptions: ['Сиситема 1', 'Сиситема 2', 'Сиситема 3', 'Сиситема 4', 'Сиситема 5',],
+      systemOptions: ['Сиситема 1', 'Сиситема 2', 'Сиситема 3', 'Сиситема 4', 'Сиситема 5'],
       value: [],
       options: [{
         value: 'Иван Иванов1',
