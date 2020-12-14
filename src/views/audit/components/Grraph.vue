@@ -60,9 +60,9 @@ export default {
           series: [
             {
               type: 'graph',
-              symbolSize: [150, 90],
+              symbolSize: [120, 90],
               roam: true,
-              color: '#f00',
+              color: '#314b6e',
               label: {
                 show: true
               },
@@ -95,7 +95,8 @@ export default {
                 y: 100,
                 itemStyle: {
                   color: '#f0f'
-                }
+                },
+                symbolSize: 180
               }, {
                 name: 'Вход в систему (визит)',
                 x: 200,
@@ -106,7 +107,8 @@ export default {
                 y: 100,
                 itemStyle: {
                   color: '#ffad1c'
-                }
+                },
+                symbolSize: 180
               }, {
                 name: 'Завершение сессии пользователя',
                 x: 600,
@@ -149,7 +151,8 @@ export default {
                 y: 300,
                 itemStyle: {
                   color: '#076aff'
-                }
+                },
+                symbolSize: 180
               }, {
                 name: 'Экспорт данных',
                 x: 700,
