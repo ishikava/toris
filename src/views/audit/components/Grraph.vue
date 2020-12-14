@@ -74,9 +74,21 @@ export default {
               lineStyle: {
                 opacity: 0.9,
                 width: 2,
-                curveness: 0.2
+                color: 'source',
+                curveness: 0.3
               },
               focusNodeAdjacency: true,
+              itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 1,
+                shadowBlur: 10,
+                shadowColor: 'rgba(0, 0, 0, 0.3)'
+              },
+              emphasis: {
+                lineStyle: {
+                  width: 10
+                }
+              },
               data: [{
                 name: 'Аутентификация пользователя',
                 x: 0,
@@ -134,7 +146,10 @@ export default {
               }, {
                 name: 'Формирование печатной формы',
                 x: 500,
-                y: 300
+                y: 300,
+                itemStyle: {
+                  color: '#076aff'
+                }
               }, {
                 name: 'Экспорт данных',
                 x: 700,
