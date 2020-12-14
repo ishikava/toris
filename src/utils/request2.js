@@ -1,12 +1,12 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { Message, MessageBox } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  // baseURL: 'http://194.67.109.37:81', // url = base url + request url
-  baseURL: 'http://192.168.2.190', // url = base url + request url
+  baseURL: 'http://194.67.109.37:81/api',
+  // baseURL: 'http://192.168.2.190',
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 30000 // request timeout
 })
@@ -36,7 +36,7 @@ service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
-  */
+   */
 
   /**
    * Determine the request status by custom code
