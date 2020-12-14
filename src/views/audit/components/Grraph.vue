@@ -76,6 +76,7 @@ export default {
                 width: 2,
                 curveness: 0.2
               },
+              focusNodeAdjacency: true,
               data: [{
                 name: 'Аутентификация пользователя',
                 x: 0,
